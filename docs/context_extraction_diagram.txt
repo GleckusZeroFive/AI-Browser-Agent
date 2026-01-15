@@ -1,0 +1,187 @@
+Context Extraction Pattern - Architecture Diagram
+================================================
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                          DIALOGUE MANAGER                           │
+│                       (Orchestrates the flow)                       │
+└──────────────────┬──────────────────────────────────────────────────┘
+                   │
+                   │ 1. User Input
+                   ├──────────────────────────────────────────────┐
+                   │                                              │
+                   ▼                                              │
+         ┌─────────────────┐                                     │
+         │    AI Agent     │                                     │
+         │  (Responds to   │                                     │
+         │   user input)   │                                     │
+         └────────┬────────┘                                     │
+                  │ 2. Response                                  │
+                  │                                              │
+                  ▼                                              │
+    ┌──────────────────────────────┐                            │
+    │    CONTEXT EXTRACTOR          │                            │
+    │  (Automatic extraction)       │                            │
+    │                               │                            │
+    │  extract_from_turn()          │◄───────────────────────────┘
+    │    ├─> LLM Analysis           │   3. Extract context from
+    │    ├─> JSON Parsing           │      (user_msg, agent_response)
+    │    └─> Update Context         │
+    │                               │
+    │  extracted_context: {         │
+    │    "dietary_restrictions": ...,│
+    │    "people_count": ...,       │
+    │    "budget": ...,             │
+    │  }                            │
+    └──────────────┬────────────────┘
+                   │
+                   │ 4. Action Execution
+                   │
+                   ▼
+         ┌─────────────────────────────────┐
+         │   _execute_action_with_followup │
+         │                                 │
+         │   ┌───────────────────────────┐ │
+         │   │ _format_action_result     │ │
+         │   │                           │ │
+         │   │ get_context_for_action()  │ │◄── 5. Get ONLY relevant
+         │   │    ↓                      │ │      context for this
+         │   │ Returns:                  │ │      specific action
+         │   │ "⚠️ ВАЖНАЯ ИНФОРМАЦИЯ:"  │ │
+         │   │ "🚨 ОГРАНИЧЕНИЯ: ..."    │ │
+         │   └───────────────────────────┘ │
+         └─────────────────────────────────┘
+
+
+CONTEXT RELEVANCE MAPPING
+==========================
+
+┌─────────────────────────┬────────────────────────────────────────┐
+│     Context Type        │       Relevant for Actions             │
+├─────────────────────────┼────────────────────────────────────────┤
+│ dietary_restrictions    │ click_by_text, get_modal_text,         │
+│                         │ get_page_text, scroll                  │
+├─────────────────────────┼────────────────────────────────────────┤
+│ people_count           │ click_by_text, get_modal_text          │
+├─────────────────────────┼────────────────────────────────────────┤
+│ budget                 │ click_by_text, get_page_text           │
+├─────────────────────────┼────────────────────────────────────────┤
+│ location               │ navigate, type_text                    │
+├─────────────────────────┼────────────────────────────────────────┤
+│ delivery_address       │ type_text, click_by_text               │
+├─────────────────────────┼────────────────────────────────────────┤
+│ delivery_time          │ click_by_text, type_text               │
+└─────────────────────────┴────────────────────────────────────────┘
+
+
+EXAMPLE FLOW
+============
+
+User: "Закажи пиццу без морепродуктов на 4 человек"
+   │
+   ▼
+┌────────────────────────────────────────────────────┐
+│ Agent: "Понял, буду искать пиццу без морепродуктов"│
+└──────────────────────┬─────────────────────────────┘
+                       │
+                       ▼
+            ┌──────────────────────┐
+            │ ContextExtractor     │
+            │ analyzes dialogue... │
+            └──────────┬───────────┘
+                       │
+                       ▼
+            ┌──────────────────────────────────┐
+            │ Extracted Context:               │
+            │ {                                │
+            │   "dietary_restrictions":        │
+            │      "аллергия на морепродукты", │
+            │   "people_count": 4              │
+            │ }                                │
+            └──────────┬───────────────────────┘
+                       │
+       ┌───────────────┴────────────────┐
+       │                                │
+       ▼                                ▼
+┌─────────────────┐          ┌─────────────────┐
+│ Action: scroll  │          │ Action:         │
+│                 │          │ click_by_text   │
+│ Context: ""     │          │                 │
+│ (not relevant)  │          │ Context:        │
+└─────────────────┘          │ ⚠️ ВАЖНО:      │
+                             │ 🚨 ОГРАНИЧЕНИЯ:│
+                             │    без морепр.  │
+                             │ 👥 Людей: 4    │
+                             └─────────────────┘
+
+
+OLD vs NEW APPROACH
+===================
+
+OLD APPROACH ❌
+---------------
+┌──────────────────────────────────┐
+│  DialogueManager                 │
+│                                  │
+│  user_restrictions = {           │ ← Not its responsibility!
+│    "allergies": [],              │
+│    "dislikes": [],               │
+│    "preferences": []             │
+│  }                               │
+│                                  │
+│  ┌────────────────────────────┐  │
+│  │ _format_action_result      │  │
+│  │                            │  │
+│  │ context +=                 │  │
+│  │   _format_user_restrictions│◄─┼─ Passed on EVERY action!
+│  │                            │  │   (even for scroll!)
+│  └────────────────────────────┘  │
+└──────────────────────────────────┘
+
+NEW APPROACH ✅
+---------------
+┌──────────────────────────────────┐
+│  DialogueManager                 │
+│                                  │
+│  context_extractor = None        │ ← Delegated!
+│                                  │
+│  ┌────────────────────────────┐  │
+│  │ _format_action_result      │  │
+│  │                            │  │
+│  │ context +=                 │  │
+│  │   context_extractor        │◄─┼─ Only relevant context!
+│  │   .get_context_for_action()│  │   Smart filtering!
+│  └────────────────────────────┘  │
+└──────────────────────────────────┘
+            │
+            ▼
+┌──────────────────────────────────┐
+│  ContextExtractor                │
+│  (Separate responsibility)       │
+│                                  │
+│  • Automatic extraction          │
+│  • Smart relevance filtering     │
+│  • Context management            │
+└──────────────────────────────────┘
+
+
+BENEFITS
+========
+
+✅ AUTOMATIC
+  LLM extracts context without explicit questions
+  User: "Пицца без мяса" → Extracted: {"dietary_restrictions": "без мяса"}
+
+✅ EFFICIENT
+  Context is only passed when relevant
+  scroll → no context
+  click_by_text → dietary restrictions included
+
+✅ CLEAN ARCHITECTURE
+  Separate class with single responsibility
+  DialogueManager → orchestrates
+  ContextExtractor → manages context
+
+✅ EXTENSIBLE
+  Add new context type in 2 places:
+  1. CONTEXT_RELEVANCE mapping
+  2. Formatter function

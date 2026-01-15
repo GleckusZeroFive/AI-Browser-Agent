@@ -61,10 +61,17 @@ class Config:
         """Получить API ключ Groq"""
         if not cls.GROQ_API_KEY:
             raise ValueError(
-                "GROQ_API_KEY не найден!\n"
-                "Пожалуйста, создайте файл .env в корне проекта и добавьте:\n"
-                "GROQ_API_KEY=your_api_key_here\n"
-                "Или используйте .env.example как шаблон."
+                "\n❌ GROQ_API_KEY не найден или не настроен!\n\n"
+                "Для работы агента необходим API ключ Groq.\n\n"
+                "Шаги для настройки:\n"
+                "1. Зарегистрируйтесь на https://console.groq.com\n"
+                "2. Создайте новый API ключ в разделе 'API Keys'\n"
+                "3. Создайте файл .env в корне проекта\n"
+                "4. Добавьте в файл .env строку:\n"
+                "   GROQ_API_KEY=ваш_ключ_здесь\n\n"
+                "Пример файла .env:\n"
+                "   GROQ_API_KEY=gsk_1234567890abcdefghijklmnop\n\n"
+                "После этого перезапустите программу."
             )
         return cls.GROQ_API_KEY
 

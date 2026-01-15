@@ -12,6 +12,8 @@ from src.agent.ai_agent import AIAgent
 from src.agent.action_executor import ActionExecutor
 from src.tools.browser_tools import BrowserTools
 from src.config import Config
+from src.agent.specialized_agents import AgentSelector, TaskType
+from src.agent.context_extractor import ContextExtractor
 
 class DialogueManager:
     """Менеджер диалога пользователя с AI агентом"""
@@ -22,12 +24,13 @@ class DialogueManager:
         self.executor = ActionExecutor(self.browser_tools)
         self.browser_started = False
 
-        # Отслеживание ограничений пользователя (аллергии, предпочтения)
-        self.user_restrictions = {
-            "allergies": [],  # Список аллергенов ["морепродукты", "орехи"]
-            "dislikes": [],   # Список нежелательных продуктов ["помидоры", "грибы"]
-            "preferences": [] # Предпочтения ["острое", "без мяса"]
-        }
+        # Context Extraction Pattern: автоматическое извлечение контекста
+        # Будет инициализирован после создания агента
+        self.context_extractor: Optional[ContextExtractor] = None
+
+        # Sub-agent architecture: отслеживание текущего специализированного агента
+        self.current_task_type = TaskType.GENERAL
+        self.current_specialized_agent = None
 
         # Настройка логирования
         self._setup_logging()
@@ -41,6 +44,9 @@ class DialogueManager:
         # Инициализируем агента
         self.agent.add_system_prompt()
 
+        # Инициализируем context extractor
+        self.context_extractor = ContextExtractor(self.agent.client)
+
         # Запускаем браузер
         print("\n🌐 Запускаю браузер...")
         await self.browser_tools.start_browser(headless=Config.BROWSER_HEADLESS)
@@ -50,11 +56,12 @@ class DialogueManager:
         # ПРИВЕТСТВИЕ ОТ АГЕНТА
         print("🤖 Агент: Привет! Я автономный AI-агент для работы с браузером.")
         print("   Могу помочь с:")
-        print("   • Заказом еды")
-        print("   • Поиском вакансий")
-        print("   • Покупками онлайн")
-        print("   • И другими задачами в интернете")
-        print("\n   Какую задачу выполнить?\n")
+        print("   📧 Удалением спама из почты (Yandex, Gmail)")
+        print("   🍔 Заказом еды (Яндекс.Еда, Delivery Club, Dodopizza)")
+        print("   💼 Поиском вакансий (hh.ru, SuperJob, Habr Career)")
+        print("   🌐 Любыми другими задачами в интернете")
+        print("\n   У меня есть специализированные агенты для каждой задачи!")
+        print("   Какую задачу выполнить?\n")
         print("(Напиши задачу или 'exit' для выхода)\n")
 
         # Главный цикл диалога
@@ -87,12 +94,51 @@ class DialogueManager:
 
                 self.logger.info(f"Пользователь: {user_input}")
 
+                # Автоматический выбор специализированного агента
+                task_type, specialized_agent = AgentSelector.select_agent(user_input)
+
+                # Если тип задачи изменился - переключаем агента
+                if task_type != self.current_task_type:
+                    self.current_task_type = task_type
+                    self.current_specialized_agent = specialized_agent
+
+                    # Логируем переключение
+                    if specialized_agent:
+                        agent_name = specialized_agent.__class__.__name__
+                        self.logger.info(f"Переключение на специализированного агента: {agent_name}")
+                        print(f"🔄 Активирован специализированный агент: {agent_name}")
+
+                        # Пересоздаём AI агента с новым промптом
+                        self.agent = AIAgent()
+                        self.agent.conversation_history.append({
+                            "role": "system",
+                            "content": specialized_agent.get_system_prompt()
+                        })
+                        # Обновляем модель агента
+                        self.agent.current_model = specialized_agent.get_model()
+
+                        # Обновляем context extractor для нового агента
+                        self.context_extractor = ContextExtractor(self.agent.client)
+                    else:
+                        self.logger.info("Используется общий агент (GENERAL)")
+                        # Сбрасываем на стандартный промпт
+                        self.agent = AIAgent()
+                        self.agent.add_system_prompt()
+
+                        # Обновляем context extractor для нового агента
+                        self.context_extractor = ContextExtractor(self.agent.client)
+
                 # Отправляем в AI агента
                 print("\n🤖 Агент думает...")
 
                 try:
                     response = self.agent.chat(user_input)
                     self.logger.info(f"Агент ответил: {response[:100]}...")
+
+                    # Context Extraction: извлекаем критичную информацию из диалога
+                    if self.context_extractor:
+                        await self.context_extractor.extract_from_turn(user_input, response)
+
                 except Exception as api_error:
                     self.logger.error(f"Ошибка API: {api_error}", exc_info=True)
                     print(f"\n❌ Ошибка связи с API: {api_error}")
@@ -151,6 +197,132 @@ class DialogueManager:
                 print("Продолжаю работу...\n")
                 continue
 
+    def _is_destructive_action(self, action: dict) -> bool:
+        """
+        Проверить, является ли действие деструктивным (требует подтверждения)
+
+        Деструктивные действия:
+        - Оплата и финальное подтверждение заказа
+        - Удаление писем/данных
+        - Отправка форм (отклики на вакансии)
+        - Изменение настроек аккаунта
+
+        Args:
+            action: действие для проверки
+
+        Returns:
+            bool: True если действие деструктивное
+        """
+        action_name = action.get("action", "").lower()
+        params = action.get("params", {})
+        reasoning = action.get("reasoning", "").lower()
+
+        # Ключевые слова для деструктивных действий
+        destructive_keywords = {
+            # Финансовые операции
+            "оплат", "купить", "заказать", "подтвердить заказ", "оформить",
+            "pay", "payment", "checkout", "confirm order", "purchase",
+
+            # Удаление данных
+            "удал", "delete", "remove", "trash", "корзина",
+
+            # Отправка данных
+            "отправить", "откликнуться", "send", "submit", "apply",
+
+            # Изменение настроек
+            "изменить пароль", "change password", "delete account"
+        }
+
+        # Проверяем текст в reasoning и параметрах
+        text_to_check = f"{reasoning} {str(params)}"
+
+        for keyword in destructive_keywords:
+            if keyword in text_to_check:
+                return True
+
+        # Специфичные действия по типу
+        if action_name == "click_by_text":
+            button_text = params.get("text", "").lower()
+
+            # Опасные кнопки
+            dangerous_buttons = [
+                "оплатить", "подтвердить", "удалить", "отправить",
+                "откликнуться", "купить", "заказать",
+                "pay", "confirm", "delete", "send", "apply", "purchase"
+            ]
+
+            for dangerous in dangerous_buttons:
+                if dangerous in button_text:
+                    return True
+
+        return False
+
+    async def _ask_user_confirmation(self, action: dict) -> bool:
+        """
+        Запросить подтверждение деструктивного действия у пользователя
+
+        Args:
+            action: действие требующее подтверждения
+
+        Returns:
+            bool: True если пользователь подтвердил, False если отказался
+        """
+        action_name = action.get("action", "unknown")
+        params = action.get("params", {})
+        reasoning = action.get("reasoning", "Нет описания")
+
+        # Формируем понятное описание действия
+        print("\n" + "=" * 70)
+        print("⚠️  ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ")
+        print("=" * 70)
+        print(f"\n🔍 Действие: {action_name}")
+        print(f"📝 Описание: {reasoning}")
+        print(f"⚙️  Параметры: {params}")
+        print("\n" + "=" * 70)
+
+        # Определяем тип действия для специального предупреждения
+        reasoning_lower = reasoning.lower()
+        params_str = str(params).lower()
+
+        if any(kw in reasoning_lower or kw in params_str for kw in ["оплат", "купить", "pay", "purchase"]):
+            print("💰 ЭТО ФИНАНСОВАЯ ОПЕРАЦИЯ!")
+            print("   После подтверждения может быть списана оплата.")
+
+        elif any(kw in reasoning_lower or kw in params_str for kw in ["удал", "delete"]):
+            print("🗑️  ЭТО УДАЛЕНИЕ ДАННЫХ!")
+            print("   После подтверждения данные могут быть потеряны.")
+
+        elif any(kw in reasoning_lower or kw in params_str for kw in ["отправ", "send", "submit"]):
+            print("📤 ЭТО ОТПРАВКА ДАННЫХ!")
+            print("   После подтверждения форма будет отправлена.")
+
+        print("\n" + "=" * 70)
+
+        # Запрашиваем подтверждение
+        while True:
+            try:
+                user_response = await asyncio.to_thread(
+                    input,
+                    "Подтвердите действие (yes/no): "
+                )
+                user_response = user_response.strip().lower()
+
+                if user_response in ["yes", "y", "да", "д"]:
+                    self.logger.info(f"Пользователь подтвердил деструктивное действие: {action_name}")
+                    print("✅ Действие подтверждено. Выполняю...\n")
+                    return True
+                elif user_response in ["no", "n", "нет", "н"]:
+                    self.logger.info(f"Пользователь отклонил деструктивное действие: {action_name}")
+                    print("❌ Действие отменено.\n")
+                    return False
+                else:
+                    print("⚠️  Введите 'yes' или 'no'")
+
+            except Exception as e:
+                self.logger.error(f"Ошибка при запросе подтверждения: {e}")
+                print(f"❌ Ошибка: {e}")
+                return False
+
     async def _execute_action_with_followup(self, action: dict):
         """
         Выполнить действие и продолжить цепочку
@@ -179,6 +351,16 @@ class DialogueManager:
                     print("\n⚠️  Браузер не запущен. Пропускаю действие.")
                     self.logger.warning("Попытка выполнить действие без браузера")
                     break
+
+                # SECURITY LAYER: Проверка на деструктивные действия
+                if self._is_destructive_action(current_action):
+                    confirmed = await self._ask_user_confirmation(current_action)
+
+                    if not confirmed:
+                        # Пользователь отказался - прерываем цепочку
+                        print("🤖 Агент: Действие отменено по вашему запросу.\n")
+                        self.logger.info("Действие отменено пользователем через security layer")
+                        break
 
                 # Выполняем действие
                 self.logger.info(f"Выполняю действие: {current_action.get('action')}")
@@ -342,33 +524,14 @@ class DialogueManager:
             # Ошибка
             context += f"Ошибка: {result.get('message', 'Неизвестная ошибка')}\n"
 
-        # Добавляем ограничения пользователя в контекст
-        restrictions_text = self._format_user_restrictions()
-        if restrictions_text:
-            context += f"\n{restrictions_text}"
+        # Context Extraction Pattern: добавляем только релевантный контекст для этого действия
+        if self.context_extractor:
+            relevant_context = self.context_extractor.get_context_for_action(action_name)
+            if relevant_context:
+                context += f"\n{relevant_context}"
 
         return context
 
-    def _format_user_restrictions(self) -> str:
-        """Форматировать ограничения пользователя для контекста агента"""
-        parts = []
-
-        if self.user_restrictions["allergies"]:
-            allergies = ", ".join(self.user_restrictions["allergies"])
-            parts.append(f"🚨 АЛЛЕРГИИ: {allergies}")
-
-        if self.user_restrictions["dislikes"]:
-            dislikes = ", ".join(self.user_restrictions["dislikes"])
-            parts.append(f"❌ НЕ ЕСТ: {dislikes}")
-
-        if self.user_restrictions["preferences"]:
-            prefs = ", ".join(self.user_restrictions["preferences"])
-            parts.append(f"✅ ПРЕДПОЧИТАЕТ: {prefs}")
-
-        if parts:
-            return "\n⚠️ ОГРАНИЧЕНИЯ ПОЛЬЗОВАТЕЛЯ:\n" + "\n".join(parts)
-
-        return ""
 
     def _setup_logging(self):
         """Настроить систему логирования"""

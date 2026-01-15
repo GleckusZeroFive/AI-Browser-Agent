@@ -17,7 +17,7 @@ class BrowserTools:
         """Запустить браузер с антидетект настройками"""
         try:
             self.playwright = await async_playwright().start()
-            
+
             self.browser = await self.playwright.firefox.launch(
                 headless=headless,
                 args=[
@@ -26,7 +26,7 @@ class BrowserTools:
                     '--no-sandbox'
                 ]
             )
-            
+
             self.context = await self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
                 user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -35,31 +35,70 @@ class BrowserTools:
                 geolocation={'latitude': 56.0153, 'longitude': 92.8932},
                 permissions=['geolocation']
             )
-            
+
             await self.context.add_init_script("""
                 Object.defineProperty(navigator, 'webdriver', {
                     get: () => undefined
                 });
             """)
-            
+
             self.page = await self.context.new_page()
-            
+
             return {
                 "status": "success",
                 "message": "Браузер запущен"
             }
         except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Ошибка запуска браузера: {str(e)}"
-            }
+            error_type = type(e).__name__
+            error_msg = str(e)
+
+            # Специфичные сообщения для разных типов ошибок
+            if "Executable doesn't exist" in error_msg or "firefox" in error_msg.lower():
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Не удалось запустить Firefox браузер.\n"
+                        f"Причина: {error_msg}\n\n"
+                        f"Решение:\n"
+                        f"1. Установите Firefox для Playwright командой:\n"
+                        f"   playwright install firefox\n"
+                        f"2. Или установите все браузеры:\n"
+                        f"   playwright install"
+                    )
+                }
+            elif "timeout" in error_msg.lower():
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Превышено время ожидания запуска браузера ({error_type}).\n"
+                        f"Возможные причины:\n"
+                        f"- Недостаточно системных ресурсов\n"
+                        f"- Браузер заблокирован антивирусом\n"
+                        f"- Проблемы с правами доступа\n\n"
+                        f"Попробуйте:\n"
+                        f"1. Закрыть другие приложения\n"
+                        f"2. Переустановить браузер: playwright install firefox"
+                    )
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Не удалось запустить браузер ({error_type}).\n"
+                        f"Ошибка: {error_msg}\n\n"
+                        f"Попробуйте:\n"
+                        f"1. Переустановить браузер: playwright install firefox\n"
+                        f"2. Проверить системные требования\n"
+                        f"3. Обратиться к разделу Troubleshooting в README.md"
+                    )
+                }
     
     async def navigate(self, url: str) -> Dict[str, Any]:
         """Перейти по URL"""
         try:
             await self.page.goto(url, wait_until='domcontentloaded', timeout=30000)
             await asyncio.sleep(2)
-            
+
             return {
                 "status": "success",
                 "message": f"Перешли на {url}",
@@ -67,26 +106,84 @@ class BrowserTools:
                 "title": await self.page.title()
             }
         except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Ошибка навигации: {str(e)}"
-            }
+            error_type = type(e).__name__
+            error_msg = str(e)
+
+            if "timeout" in error_msg.lower():
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Не удалось загрузить страницу {url} (превышен таймаут).\n"
+                        f"Возможные причины:\n"
+                        f"- Медленное интернет-соединение\n"
+                        f"- Сайт недоступен или перегружен\n"
+                        f"- Проблемы с сетью\n\n"
+                        f"Попробуйте:\n"
+                        f"1. Проверить интернет-соединение\n"
+                        f"2. Открыть {url} в обычном браузере\n"
+                        f"3. Повторить попытку позже"
+                    )
+                }
+            elif "net::" in error_msg.lower() or "dns" in error_msg.lower():
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Не удалось подключиться к {url} (сетевая ошибка).\n"
+                        f"Причина: {error_msg}\n\n"
+                        f"Возможные причины:\n"
+                        f"- Неверный URL адрес\n"
+                        f"- Сайт недоступен\n"
+                        f"- Проблемы с DNS\n\n"
+                        f"Проверьте правильность URL и доступность сайта."
+                    )
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Ошибка при переходе на {url} ({error_type}).\n"
+                        f"Детали: {error_msg}"
+                    )
+                }
     
     async def click(self, selector: str) -> Dict[str, Any]:
         """Кликнуть по элементу"""
         try:
             await self.page.click(selector, timeout=10000)
             await asyncio.sleep(1)
-            
+
             return {
                 "status": "success",
                 "message": f"Кликнули по {selector}"
             }
         except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Ошибка клика: {str(e)}"
-            }
+            error_msg = str(e)
+
+            if "timeout" in error_msg.lower() or "not visible" in error_msg.lower():
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Не удалось кликнуть по элементу '{selector}' (элемент не найден или не виден).\n"
+                        f"Возможные причины:\n"
+                        f"- Элемент ещё не загрузился\n"
+                        f"- Элемент скрыт другим элементом\n"
+                        f"- Неверный селектор\n\n"
+                        f"Попробуйте подождать загрузки страницы или использовать другой селектор."
+                    )
+                }
+            elif "strict mode violation" in error_msg.lower():
+                return {
+                    "status": "error",
+                    "message": (
+                        f"Найдено несколько элементов с селектором '{selector}'.\n"
+                        f"Уточните селектор, чтобы выбрать конкретный элемент."
+                    )
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Ошибка клика по '{selector}': {error_msg}"
+                }
     
     async def type_text(self, selector: str, text: str) -> Dict[str, Any]:
         """Ввести текст в поле"""
@@ -213,23 +310,6 @@ class BrowserTools:
             return {
                 "status": "success",
                 "message": f"Кликнули по '{text}' (force)"
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Ошибка клика: {str(e)}"
-            }
-    
-    async def click_button_by_test_id(self, test_id: str) -> Dict[str, Any]:
-        """Кликнуть по кнопке с data-testid"""
-        try:
-            selector = f'[data-testid="{test_id}"]'
-            await self.page.click(selector, force=True, timeout=10000)
-            await asyncio.sleep(1)
-            
-            return {
-                "status": "success",
-                "message": f"Кликнули по кнопке с testid '{test_id}'"
             }
         except Exception as e:
             return {
