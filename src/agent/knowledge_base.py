@@ -44,7 +44,7 @@ class KnowledgeBase:
                 "Красноярск": ["Додо Пицца", "Суши Wok", "KFC"]
             },
             "services": {
-                "доставка_еды": ["Яндекс.Еда", "Delivery Club"]
+                "доставка_пиццы": ["Додопицца (dodopizza.ru)"]
             }
         },
         "interaction_history": {
@@ -90,8 +90,7 @@ class KnowledgeBase:
             "user_info": {
                 "location": None,
                 "dietary_restrictions": [],
-                "budget_preferences": {},
-                "preferences": {}
+                "budget_preferences": {}
             },
             "verified_facts": {
                 "restaurants": {},
@@ -99,14 +98,20 @@ class KnowledgeBase:
                 "locations": {}
             },
             "interaction_history": {
-                "asked_questions": [],
                 "confirmed_facts": [],
                 "rejected_suggestions": []
+            },
+            "working_memory": {
+                "current_task": None,  # "заказываю Маргариту из Додопиццы"
+                "current_page": None,  # "на странице меню Додопиццы"
+                "shown_options": [],   # ["Маргарита 490₽", "Маргарита с томатным соусом 520₽"]
+                "last_action": None,   # "показал варианты пиццы"
+                "context": {}          # произвольный контекст для текущей задачи
             },
             "metadata": {
                 "created_at": datetime.now().isoformat(),
                 "last_updated": datetime.now().isoformat(),
-                "version": "1.0"
+                "version": "1.1"
             }
         }
 
@@ -132,36 +137,34 @@ class KnowledgeBase:
             user_msg: сообщение пользователя
             agent_response: ответ агента (используется только для контекста вопросов)
         """
-        extraction_prompt = f"""Проанализируй ТОЛЬКО сообщение пользователя и извлеки информацию для базы знаний.
+        extraction_prompt = f"""Проанализируй сообщение пользователя и извлеки ТОЛЬКО критически важную информацию.
 
 USER: {user_msg}
 
-Извлеки следующую информацию (если присутствует В СООБЩЕНИИ ПОЛЬЗОВАТЕЛЯ):
+Извлеки ТОЛЬКО если ЯВНО указано:
 
-1. **Информация о пользователе** (user_info):
-   - location: город/местоположение ЕСЛИ пользователь его указал
-   - dietary_restrictions: аллергии, ограничения питания
-   - budget_preferences: бюджет для разных категорий
-   - preferences: предпочтения (типы еды, формат ответов, стиль общения)
+1. **user_info** - критическая информация:
+   - location: город (например: "в Красноярске", "живу в Москве")
+   - dietary_restrictions: аллергии/ограничения (например: "аллергия на орехи", "вегетарианец")
+   - budget_preferences: бюджет ТОЛЬКО с конкретной суммой (например: "до 500 рублей")
 
-2. **История взаимодействий** (interaction_history):
-   - asked_questions: о чем спрашивал пользователь
-   - confirmed_facts: что пользователь явно подтвердил ("да", "подойдёт", "хорошо")
-   - rejected_suggestions: что пользователь отклонил ("нет", "не хочу", "другое")
+2. **interaction_history**:
+   - confirmed_facts: явные подтверждения ("да", "подойдёт", "беру это")
+   - rejected_suggestions: явные отказы ("нет", "не хочу", "другое")
 
-КРИТИЧЕСКИ ВАЖНО:
-- НЕ извлекай verified_facts (рестораны, цены, продукты) - они должны быть проверены на реальном сайте!
-- Извлекай ТОЛЬКО информацию из сообщения пользователя
-- ИГНОРИРУЙ любые факты которые агент "нашёл" или "предложил" - это могут быть галлюцинации
+НЕ ИЗВЛЕКАЙ:
+- "preferences" - предпочтения в еде из запросов ("хочу пиццу" это НЕ предпочтение)
+- "asked_questions" - вопросы пользователя не нужны
+- Факты о ресторанах, ценах, товарах
 
-Верни JSON в формате:
+JSON формат:
 {{
-  "user_info": {{"location": "...", "preferences": {{}}, ...}},
-  "interaction_history": {{"asked_questions": [...], ...}}
+  "user_info": {{"location": "...", "dietary_restrictions": [], "budget_preferences": {{}}}},
+  "interaction_history": {{"confirmed_facts": [], "rejected_suggestions": []}}
 }}
 
-Если ничего не нашел - верни пустые объекты {{}}.
-Верни ТОЛЬКО JSON, без дополнительного текста."""
+Если ничего критичного - верни {{}}.
+ТОЛЬКО JSON."""
 
         try:
             response = self.llm.chat.completions.create(
@@ -321,10 +324,19 @@ USER: {user_msg}
 
     def _generate_minimal_context(self, user_info: Dict[str, Any]) -> str:
         """
-        Генерация минимального контекста (~100 токенов)
-        Только критическая информация: город и аллергии
+        Генерация минимального контекста (~150 токенов)
+        Критическая информация: город, аллергии + ТЕКУЩАЯ ЗАДАЧА
         """
         lines = []
+
+        # WORKING MEMORY (самое важное!)
+        wm = self.knowledge.get("working_memory", {})
+        if wm.get("current_task"):
+            lines.append(f"🎯 ТЕКУЩАЯ ЗАДАЧА: {wm['current_task']}")
+        if wm.get("current_page"):
+            lines.append(f"📄 ГДЕ ТЫ: {wm['current_page']}")
+        if wm.get("shown_options"):
+            lines.append(f"📋 ПОКАЗАЛ ВАРИАНТЫ: {', '.join(wm['shown_options'][:3])}")
 
         # Местоположение
         if user_info.get("location"):
@@ -350,27 +362,33 @@ USER: {user_msg}
         task_type: Optional[str]
     ) -> str:
         """
-        Генерация компактного контекста (~300 токенов)
-        Минимальная инфо + предпочтения + отфильтрованные факты
+        Генерация компактного контекста (~400 токенов)
+        WORKING MEMORY + минимальная инфо + предпочтения + отфильтрованные факты
         """
         lines = []
 
+        # WORKING MEMORY (КРИТИЧНО для решения проблемы!)
+        wm = self.knowledge.get("working_memory", {})
+        if wm.get("current_task"):
+            lines.append(f"🎯 ТЕКУЩАЯ ЗАДАЧА: {wm['current_task']}")
+        if wm.get("current_page"):
+            lines.append(f"📄 ГДЕ ТЫ СЕЙЧАС: {wm['current_page']}")
+        if wm.get("shown_options"):
+            lines.append("📋 ТЫ УЖЕ ПОКАЗАЛ ВАРИАНТЫ:")
+            for i, opt in enumerate(wm['shown_options'][:5], 1):
+                lines.append(f"   {i}. {opt}")
+        if wm.get("last_action"):
+            lines.append(f"⚡ ПОСЛЕДНЕЕ ДЕЙСТВИЕ: {wm['last_action']}")
+
         # Включаем всё из MINIMAL
         if user_info.get("location"):
-            lines.append(f"📍 Местоположение: {user_info['location']}")
+            lines.append(f"\n📍 Местоположение: {user_info['location']}")
 
         if user_info.get("dietary_restrictions"):
             restrictions = ", ".join(user_info["dietary_restrictions"])
             lines.append(f"⚠️  Аллергии: {restrictions}")
         else:
             lines.append("⚠️  Аллергии: нет")
-
-        # Предпочтения (максимум 5 последних, с фильтрацией по task_type)
-        prefs = user_info.get("preferences", {})
-        if prefs:
-            filtered_prefs = self._filter_preferences(prefs, task_type)
-            if filtered_prefs:
-                lines.append(f"🍽️  Предпочтения: {filtered_prefs}")
 
         # Бюджет (если есть)
         if user_info.get("budget_preferences"):
@@ -397,10 +415,27 @@ USER: {user_msg}
         history: Dict[str, Any]
     ) -> str:
         """
-        Генерация полного контекста (~800+ токенов)
-        Вся доступная информация без фильтрации
+        Генерация полного контекста (~1000+ токенов)
+        Вся доступная информация без фильтрации + WORKING MEMORY
         """
         lines = ["📚 БАЗА ЗНАНИЙ О ПОЛЬЗОВАТЕЛЕ:"]
+
+        # WORKING MEMORY первым делом!
+        wm = self.knowledge.get("working_memory", {})
+        if any([wm.get("current_task"), wm.get("current_page"), wm.get("shown_options")]):
+            lines.append("\n🔥 КРАТКОСРОЧНАЯ ПАМЯТЬ (ТЕКУЩАЯ ЗАДАЧА):")
+            if wm.get("current_task"):
+                lines.append(f"  🎯 Задача: {wm['current_task']}")
+            if wm.get("current_page"):
+                lines.append(f"  📄 Страница: {wm['current_page']}")
+            if wm.get("shown_options"):
+                lines.append("  📋 Показанные варианты:")
+                for i, opt in enumerate(wm['shown_options'], 1):
+                    lines.append(f"     {i}. {opt}")
+            if wm.get("last_action"):
+                lines.append(f"  ⚡ Последнее действие: {wm['last_action']}")
+            if wm.get("context"):
+                lines.append(f"  💡 Доп. контекст: {wm['context']}")
 
         # User info
         if user_info.get("location"):
@@ -415,20 +450,6 @@ USER: {user_msg}
                 f"{k}: {v}₽" for k, v in user_info["budget_preferences"].items()
             )
             lines.append(f"💰 Бюджет: {budget_str}")
-
-        if user_info.get("preferences"):
-            prefs = user_info["preferences"]
-            # Проверяем что preferences это словарь, а не список
-            if isinstance(prefs, dict):
-                if prefs.get("food_types") and isinstance(prefs["food_types"], list):
-                    foods = ", ".join(prefs["food_types"])
-                    lines.append(f"🍽️  Предпочтения: {foods}")
-                if prefs.get("response_format"):
-                    lines.append(f"💬 Формат ответов: {prefs['response_format']}")
-            elif isinstance(prefs, list):
-                # Если это список - проверяем что все элементы строки
-                str_prefs = [str(p) for p in prefs]
-                lines.append(f"🍽️  Предпочтения: {', '.join(str_prefs)}")
 
         # Verified facts
         if verified.get("restaurants"):
@@ -450,52 +471,6 @@ USER: {user_msg}
         lines.append("\nОтвечай на русском языке.")
 
         return "\n".join(lines)
-
-    def _filter_preferences(self, prefs: Any, task_type: Optional[str]) -> str:
-        """
-        Фильтрация предпочтений по типу задачи
-
-        Args:
-            prefs: Предпочтения пользователя (dict или list)
-            task_type: Тип задачи (shopping/email/job_search/None)
-
-        Returns:
-            Отфильтрованная строка с предпочтениями (максимум 5)
-        """
-        # Если task_type == "email", не включаем предпочтения вообще
-        if task_type == "email":
-            return ""
-
-        pref_list = []
-
-        if isinstance(prefs, dict):
-            # Для shopping - берём только еду
-            if task_type == "shopping":
-                if prefs.get("food_types") and isinstance(prefs["food_types"], list):
-                    pref_list = prefs["food_types"]
-            # Для job_search - берём навыки/технологии
-            elif task_type == "job_search":
-                if prefs.get("skills") and isinstance(prefs["skills"], list):
-                    pref_list = prefs["skills"]
-                elif prefs.get("technologies") and isinstance(prefs["technologies"], list):
-                    pref_list = prefs["technologies"]
-            # Для None - берём всё
-            else:
-                if prefs.get("food_types") and isinstance(prefs["food_types"], list):
-                    pref_list = prefs["food_types"]
-                # Добавляем другие предпочтения из словаря
-                for key, value in prefs.items():
-                    if key != "food_types" and isinstance(value, list):
-                        pref_list.extend(value)
-        elif isinstance(prefs, list):
-            pref_list = [str(p) for p in prefs]
-
-        # Берём максимум 5 последних предпочтений
-        if pref_list:
-            recent_prefs = pref_list[-5:]
-            return ", ".join(recent_prefs)
-
-        return ""
 
     def _filter_verified_facts(
         self,
@@ -697,6 +672,62 @@ USER: {user_msg}
             self.knowledge["verified_facts"][fact_type][category].append(fact)
             self.logger.info(f"Добавлен проверенный факт: {fact_type}.{category} += {fact}")
             self.save()
+
+    def set_working_context(
+        self,
+        current_task: Optional[str] = None,
+        current_page: Optional[str] = None,
+        shown_options: Optional[List[str]] = None,
+        last_action: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None
+    ):
+        """
+        Обновить краткосрочную рабочую память агента
+
+        Args:
+            current_task: Описание текущей задачи
+            current_page: Где сейчас находится агент
+            shown_options: Варианты, которые показал агент
+            last_action: Последнее действие агента
+            context: Дополнительный контекст
+        """
+        wm = self.knowledge.get("working_memory", {})
+
+        if current_task is not None:
+            wm["current_task"] = current_task
+        if current_page is not None:
+            wm["current_page"] = current_page
+        if shown_options is not None:
+            wm["shown_options"] = shown_options
+        if last_action is not None:
+            wm["last_action"] = last_action
+        if context is not None:
+            wm["context"].update(context)
+
+        self.knowledge["working_memory"] = wm
+        self.logger.debug(f"Working memory обновлена: task={current_task}, page={current_page}")
+        self.save()
+
+    def get_working_context(self) -> Dict[str, Any]:
+        """
+        Получить текущий рабочий контекст
+
+        Returns:
+            Словарь с краткосрочной памятью
+        """
+        return self.knowledge.get("working_memory", {})
+
+    def clear_working_memory(self):
+        """Очистить краткосрочную память (при завершении задачи)"""
+        self.knowledge["working_memory"] = {
+            "current_task": None,
+            "current_page": None,
+            "shown_options": [],
+            "last_action": None,
+            "context": {}
+        }
+        self.logger.info("Working memory очищена")
+        self.save()
 
     def clear(self):
         """Очистить всю базу знаний"""

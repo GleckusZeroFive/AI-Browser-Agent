@@ -1,0 +1,33 @@
+{
+  "session_id": "20260116_202303",
+  "timestamp": "2026-01-16T20:24:53.370386",
+  "total_errors": 2,
+  "runtime_errors": 0,
+  "structured_errors": 2,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T20:23:48.044127",
+      "action": "navigate",
+      "params": {
+        "url": "https://pogoda.ru.net/gorod/krasnoyarsk"
+      },
+      "reasoning": "Переход на сайт погоды",
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://pogoda.ru.net/gorod/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://pogoda.ru.net/gorod/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+      "suggestion": null
+    },
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T20:24:09.312410",
+      "action": "stop",
+      "params": {
+        "result": "Текущая погода в Красноярске: -32°, ясно, осадков не ожидается."
+      },
+      "reasoning": "Выполнил задачу по получению информации о погоде",
+      "error_type": null,
+      "error_message": "Неизвестное действие: stop",
+      "suggestion": null
+    }
+  ]
+}

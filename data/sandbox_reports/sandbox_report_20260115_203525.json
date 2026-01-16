@@ -1,0 +1,194 @@
+{
+  "timestamp": "2026-01-15T20:35:25.684822",
+  "summary": {
+    "total_tests": 14,
+    "successful": 12,
+    "failed": 1,
+    "skipped": 0,
+    "success_rate": 85.71
+  },
+  "functionality_map": {
+    "navigate": "working",
+    "click_by_text": "working",
+    "get_page_text": "working",
+    "scroll_down": "working",
+    "scroll_up": "working",
+    "press_key": "working",
+    "type_text": "broken",
+    "take_screenshot": "working",
+    "wait_for_text": "working",
+    "find_text": "working",
+    "close_modal": "working",
+    "wait_for_modal": "unknown",
+    "get_modal_text": "working (conditional)"
+  },
+  "errors": {
+    "by_type": {
+      "null": 1
+    },
+    "by_action": {
+      "type_text": [
+        {
+          "scenario": "Ввод текста в поле поиска",
+          "error": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[name='q']\")\n",
+          "error_type": null
+        }
+      ]
+    }
+  },
+  "executor_stats": {
+    "total_errors": 0
+  },
+  "detailed_results": [
+    {
+      "scenario": "Навигация на Google",
+      "action": "navigate",
+      "params": {
+        "url": "https://www.google.com"
+      },
+      "timestamp": "2026-01-15T20:33:43.869592",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3931
+    },
+    {
+      "scenario": "Навигация на Example.com",
+      "action": "navigate",
+      "params": {
+        "url": "https://example.com"
+      },
+      "timestamp": "2026-01-15T20:33:48.801807",
+      "status": "success",
+      "error": null,
+      "duration_ms": 2987
+    },
+    {
+      "scenario": "Клик по тексту 'Example Domain'",
+      "action": "click_by_text",
+      "params": {
+        "text": "Example Domain"
+      },
+      "timestamp": "2026-01-15T20:33:52.793737",
+      "status": "success",
+      "error": null,
+      "duration_ms": 4100
+    },
+    {
+      "scenario": "Получение текста страницы",
+      "action": "get_page_text",
+      "params": {},
+      "timestamp": "2026-01-15T20:33:57.896175",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3059
+    },
+    {
+      "scenario": "Прокрутка вниз на 500px",
+      "action": "scroll_down",
+      "params": {
+        "pixels": 500
+      },
+      "timestamp": "2026-01-15T20:34:01.956642",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3539
+    },
+    {
+      "scenario": "Прокрутка вверх на 300px",
+      "action": "scroll_up",
+      "params": {
+        "pixels": 300
+      },
+      "timestamp": "2026-01-15T20:34:06.497479",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3535
+    },
+    {
+      "scenario": "Нажатие клавиши Escape",
+      "action": "press_key",
+      "params": {
+        "key": "Escape"
+      },
+      "timestamp": "2026-01-15T20:34:11.034001",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3336
+    },
+    {
+      "scenario": "Ввод текста в поле поиска",
+      "action": "type_text",
+      "params": {
+        "selector": "input[name='q']",
+        "text": "test query"
+      },
+      "timestamp": "2026-01-15T20:34:15.371562",
+      "status": "failed",
+      "error": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[name='q']\")\n",
+      "duration_ms": 34070,
+      "error_type": null
+    },
+    {
+      "scenario": "Создание скриншота",
+      "action": "take_screenshot",
+      "params": {},
+      "timestamp": "2026-01-15T20:34:50.442816",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3088
+    },
+    {
+      "scenario": "Ожидание текста 'Example'",
+      "action": "wait_for_text",
+      "params": {
+        "text": "Example",
+        "timeout": 5000
+      },
+      "timestamp": "2026-01-15T20:34:54.532054",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3064
+    },
+    {
+      "scenario": "Поиск текста 'Example'",
+      "action": "find_text",
+      "params": {
+        "search_text": "Example"
+      },
+      "timestamp": "2026-01-15T20:34:58.603643",
+      "status": "success",
+      "error": null,
+      "duration_ms": 4911
+    },
+    {
+      "scenario": "Закрытие модального окна",
+      "action": "close_modal",
+      "params": {},
+      "timestamp": "2026-01-15T20:35:04.517364",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3563
+    },
+    {
+      "scenario": "Ожидание модального окна",
+      "action": "wait_for_modal",
+      "params": {
+        "timeout": 2000
+      },
+      "timestamp": "2026-01-15T20:35:09.081722",
+      "status": "unknown",
+      "error": "Неожиданный статус ответа",
+      "duration_ms": 11044
+    },
+    {
+      "scenario": "Получение текста модального окна",
+      "action": "get_modal_text",
+      "params": {},
+      "timestamp": "2026-01-15T20:35:21.127913",
+      "status": "expected_fail",
+      "error": null,
+      "duration_ms": 3555,
+      "note": "Может не найти модальное окно - это нормально"
+    }
+  ]
+}

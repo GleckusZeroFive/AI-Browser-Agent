@@ -1,0 +1,1 @@
+{"type": "structured", "timestamp": "2026-01-16T11:49:39.305891", "action": "wait_for_results", "params": {}, "reasoning": "Жду результатов поиска", "error_type": null, "error_message": "Неизвестное действие: wait_for_results", "suggestion": null}

@@ -1,0 +1,22 @@
+{
+  "session_id": "20260115_214141",
+  "timestamp": "2026-01-15T21:43:32.778368",
+  "total_errors": 1,
+  "runtime_errors": 0,
+  "structured_errors": 1,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-15T21:43:20.753306",
+      "action": "type_text",
+      "params": {
+        "selector": "[поле поиска]",
+        "text": "пицца два сыра дор блю пармезан"
+      },
+      "reasoning": "Ищу пиццу с конкретными ингредиентами",
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Document.querySelectorAll: '[поле поиска]' is not a valid selector\nquery@debugger eval code:5232:41\n_queryCSS/<@debugger eval code:5242:12\n_cached@debugger eval code:5019:20\n_queryCSS@debugger eval code:5229:17\n_querySimple@debugger eval code:5109:19\nquery/<@debugger eval code:5057:29\n_cached@debugger eval code:5019:20\nquery@debugger eval code:5050:19\nquery@debugger eval code:5264:44\n_callQuery/<@debugger eval code:5222:21\n_cached@debugger eval code:5019:20\n_callQuery@debugger eval code:5221:17\n_queryEngine@debugger eval code:5210:19\nquery/<@debugger eval code:5052:23\n_cached@debugger eval code:5019:20\nquery@debugger eval code:5050:19\nqueryAll@debugger eval code:6810:32\n_queryEngineAll@debugger eval code:6789:49\nquerySelectorAll@debugger eval code:6776:30\n@debugger eval code line 290 > eval:2:35\nevaluate@debugger eval code:292:16\n@debugger eval code:1:44\n\nCall log:\n  - waiting for locator(\"[поле поиска]\")\n",
+      "suggestion": null
+    }
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-01-16T22:08:39.343694",
+  "bugs": {
+    "5d5db26d70c2": {
+      "bug_id": "5d5db26d70c2",
+      "status": "detected",
+      "first_seen": "2026-01-15T21:16:20.053922",
+      "last_seen": "2026-01-15T21:16:20.054654",
+      "occurrences": 2,
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://www.dolcegabbana.com (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://www.dolcegabbana.com в обычном браузере\n3. Повторить попытку позже",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260115_210301",
+          "timestamp": "2026-01-15T21:16:20.053933",
+          "source": "migration"
+        },
+        {
+          "session_id": "20260115_210301",
+          "timestamp": "2026-01-15T21:16:20.054657",
+          "source": "migration"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "53de14f77ee4": {
+      "bug_id": "53de14f77ee4",
+      "status": "detected",
+      "first_seen": "2026-01-15T21:21:44.257391",
+      "last_seen": "2026-01-16T12:06:20.273876",
+      "occurrences": 5,
+      "error_type": null,
+      "error_message": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Luna Coffee Shop\").first\n",
+      "action": "click_by_text",
+      "sessions": [
+        {
+          "session_id": "20260115_212041",
+          "timestamp": "2026-01-15T21:21:44.257403",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_111257",
+          "timestamp": "2026-01-16T11:15:15.283950",
+          "source": "sandbox"
+        },
+        {
+          "session_id": "20260116_111257",
+          "timestamp": "2026-01-16T11:15:31.799701",
+          "source": "sandbox"
+        },
+        {
+          "session_id": "20260116_120429",
+          "timestamp": "2026-01-16T12:06:03.077860",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_120429",
+          "timestamp": "2026-01-16T12:06:20.273878",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "de25759f90b6": {
+      "bug_id": "de25759f90b6",
+      "status": "detected",
+      "first_seen": "2026-01-15T21:32:31.572143",
+      "last_seen": "2026-01-15T21:32:31.572145",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#composition\")\n",
+      "action": "type_text",
+      "sessions": [
+        {
+          "session_id": "20260115_213053",
+          "timestamp": "2026-01-15T21:32:31.572146",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "381071d0ad00": {
+      "bug_id": "381071d0ad00",
+      "status": "detected",
+      "first_seen": "2026-01-15T21:43:20.753495",
+      "last_seen": "2026-01-15T21:43:20.753497",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Document.querySelectorAll: '[поле поиска]' is not a valid selector\nquery@debugger eval code:5232:41\n_queryCSS/<@debugger eval code:5242:12\n_cached@debugger eval code:5019:20\n_queryCSS@debugger eval code:5229:17\n_querySimple@debugger eval code:5109:19\nquery/<@debugger eval code:5057:29\n_cached@debugger eval code:5019:20\nquery@debugger eval code:5050:19\nquery@debugger eval code:5264:44\n_callQuery/<@debugger eval code:5222:21\n_cached@debugger eval code:5019:20\n_callQuery@debugger eval code:5221:17\n_queryEngine@debugger eval code:5210:19\nquery/<@debugger eval code:5052:23\n_cached@debugger eval code:5019:20\nquery@debugger eval code:5050:19\nqueryAll@debugger eval code:6810:32\n_queryEngineAll@debugger eval code:6789:49\nquerySelectorAll@debugger eval code:6776:30\n@debugger eval code line 290 > eval:2:35\nevaluate@debugger eval code:292:16\n@debugger eval code:1:44\n\nCall log:\n  - waiting for locator(\"[поле поиска]\")\n",
+      "action": "type_text",
+      "sessions": [
+        {
+          "session_id": "20260115_214141",
+          "timestamp": "2026-01-15T21:43:20.753498",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "d78dee432ae9": {
+      "bug_id": "d78dee432ae9",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:01:00.031943",
+      "last_seen": "2026-01-16T11:01:00.031945",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Ошибка при переходе на https://pizzacity.ru/krasnoyarsk (Error).\nДетали: Page.goto: NS_ERROR_UNKNOWN_HOST\nCall log:\n  - navigating to \"https://pizzacity.ru/krasnoyarsk\", waiting until \"domcontentloaded\"\n",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260116_105937",
+          "timestamp": "2026-01-16T11:01:00.031946",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "39171563ffe0": {
+      "bug_id": "39171563ffe0",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:02:06.559303",
+      "last_seen": "2026-01-16T11:02:06.559315",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://yandex.ru/eats/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://yandex.ru/eats/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260116_105937",
+          "timestamp": "2026-01-16T11:02:06.559317",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "310e18112483": {
+      "bug_id": "310e18112483",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:07:15.535027",
+      "last_seen": "2026-01-16T11:07:15.535031",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Капча не решена на https://delivery-club.ru/krasnoyarsk. Таймаут ожидания (300с). Капча не решена.",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260116_105937",
+          "timestamp": "2026-01-16T11:07:15.535033",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "133b87d1b475": {
+      "bug_id": "133b87d1b475",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:11:21.608498",
+      "last_seen": "2026-01-16T11:14:58.760220",
+      "occurrences": 3,
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+      "action": "type_text",
+      "sessions": [
+        {
+          "session_id": "20260116_105937",
+          "timestamp": "2026-01-16T11:11:21.608505",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_111257",
+          "timestamp": "2026-01-16T11:14:27.750274",
+          "source": "sandbox"
+        },
+        {
+          "session_id": "20260116_111257",
+          "timestamp": "2026-01-16T11:14:58.760233",
+          "source": "sandbox"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "3db53aa80bb6": {
+      "bug_id": "3db53aa80bb6",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:29:34.738813",
+      "last_seen": "2026-01-16T11:29:34.738815",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Не удалось найти поле поиска. Попробовано 0 селекторов.",
+      "action": "search_and_type",
+      "sessions": [
+        {
+          "session_id": "20260116_112833",
+          "timestamp": "2026-01-16T11:29:34.738816",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "7e41734f105d": {
+      "bug_id": "7e41734f105d",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:30:10.002373",
+      "last_seen": "2026-01-16T11:30:10.002376",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://2gis.ru/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://2gis.ru/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260116_112833",
+          "timestamp": "2026-01-16T11:30:10.002378",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "6b9b1bdfbf68": {
+      "bug_id": "6b9b1bdfbf68",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:30:22.320730",
+      "last_seen": "2026-01-16T21:58:03.245778",
+      "occurrences": 3,
+      "error_type": null,
+      "error_message": "Модальное окно не найдено или пустое",
+      "action": "get_modal_text",
+      "sessions": [
+        {
+          "session_id": "20260116_112833",
+          "timestamp": "2026-01-16T11:30:22.320733",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_122039",
+          "timestamp": "2026-01-16T12:22:25.194882",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_215631",
+          "timestamp": "2026-01-16T21:58:03.245780",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "0bc0b3e8d245": {
+      "bug_id": "0bc0b3e8d245",
+      "status": "detected",
+      "first_seen": "2026-01-16T11:49:39.306066",
+      "last_seen": "2026-01-16T11:55:54.266354",
+      "occurrences": 2,
+      "error_type": null,
+      "error_message": "Неизвестное действие: wait_for_results",
+      "action": "wait_for_results",
+      "sessions": [
+        {
+          "session_id": "20260116_114837",
+          "timestamp": "2026-01-16T11:49:39.306069",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_115438",
+          "timestamp": "2026-01-16T11:55:54.266356",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "eca4e22463c3": {
+      "bug_id": "eca4e22463c3",
+      "status": "detected",
+      "first_seen": "2026-01-16T12:18:05.481625",
+      "last_seen": "2026-01-16T12:18:05.481630",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Элемент с текстом 'Пицца Пепперони от Pizza Persty - 329 ₽' не найден на странице или не загрузился.\nВозможные причины:\n- Элемент всё ещё загружается (попробуйте scroll_down или подождите)\n- Текст не точно совпадает (попробуйте более короткий вариант)\n- Элемент находится в другом месте страницы",
+      "action": "click_by_text",
+      "sessions": [
+        {
+          "session_id": "20260116_121654",
+          "timestamp": "2026-01-16T12:18:05.481633",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "76dd6cfb228a": {
+      "bug_id": "76dd6cfb228a",
+      "status": "detected",
+      "first_seen": "2026-01-16T16:49:45.588494",
+      "last_seen": "2026-01-16T16:49:45.588496",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Элемент с текстом 'Пицца Цезарь от Додопицца' не найден на странице или не загрузился.\nВозможные причины:\n- Элемент всё ещё загружается (попробуйте scroll_down или подождите)\n- Текст не точно совпадает (попробуйте более короткий вариант)\n- Элемент находится в другом месте страницы",
+      "action": "click_by_text",
+      "sessions": [
+        {
+          "session_id": "20260116_164624",
+          "timestamp": "2026-01-16T16:49:45.588497",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "3a9e4521ea37": {
+      "bug_id": "3a9e4521ea37",
+      "status": "detected",
+      "first_seen": "2026-01-16T20:23:48.044308",
+      "last_seen": "2026-01-16T20:23:48.044310",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://pogoda.ru.net/gorod/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://pogoda.ru.net/gorod/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260116_202303",
+          "timestamp": "2026-01-16T20:23:48.044311",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "3c8e604f4959": {
+      "bug_id": "3c8e604f4959",
+      "status": "detected",
+      "first_seen": "2026-01-16T20:24:09.312521",
+      "last_seen": "2026-01-16T20:31:21.874324",
+      "occurrences": 4,
+      "error_type": null,
+      "error_message": "Неизвестное действие: stop",
+      "action": "stop",
+      "sessions": [
+        {
+          "session_id": "20260116_202303",
+          "timestamp": "2026-01-16T20:24:09.312523",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_203034",
+          "timestamp": "2026-01-16T20:31:16.534990",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_203034",
+          "timestamp": "2026-01-16T20:31:18.430482",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_203034",
+          "timestamp": "2026-01-16T20:31:21.874325",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "cd78f7b73c79": {
+      "bug_id": "cd78f7b73c79",
+      "status": "detected",
+      "first_seen": "2026-01-16T20:31:20.617094",
+      "last_seen": "2026-01-16T20:31:20.617096",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]\nCall log:\n  - waiting for locator(\"body\")\n    - locator resolved to <body>…</body>\n    - fill(\"Погода в Москве сейчас: -9°, ясно, ощущается как -12°, без осадков, давление 766 мм рт. ст., влажность 83%. Предупреждение Гидрометцентра: гололедица.\")\n  - attempting fill action\n    - waiting for element to be visible, enabled and editable\n",
+      "action": "type_text",
+      "sessions": [
+        {
+          "session_id": "20260116_203034",
+          "timestamp": "2026-01-16T20:31:20.617097",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "e73b66044b67": {
+      "bug_id": "e73b66044b67",
+      "status": "detected",
+      "first_seen": "2026-01-16T20:36:06.743844",
+      "last_seen": "2026-01-16T20:36:06.743846",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#search-input\")\n",
+      "action": "type_text",
+      "sessions": [
+        {
+          "session_id": "20260116_203458",
+          "timestamp": "2026-01-16T20:36:06.743847",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "f180147ae02d": {
+      "bug_id": "f180147ae02d",
+      "status": "detected",
+      "first_seen": "2026-01-16T20:51:11.336228",
+      "last_seen": "2026-01-16T20:51:11.336230",
+      "occurrences": 1,
+      "error_type": "parameter_error",
+      "error_message": "Неверные параметры для search_and_type: ActionExecutor._execute_search_and_type() got an unexpected keyword argument 'timeout'",
+      "action": "search_and_type",
+      "sessions": [
+        {
+          "session_id": "20260116_205043",
+          "timestamp": "2026-01-16T20:51:11.336231",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "ed15d71d01fc": {
+      "bug_id": "ed15d71d01fc",
+      "status": "detected",
+      "first_seen": "2026-01-16T21:04:39.262107",
+      "last_seen": "2026-01-16T21:09:39.754687",
+      "occurrences": 2,
+      "error_type": null,
+      "error_message": "Текст не появился: Locator.wait_for: Timeout 10000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Начать поиск\").first to be visible\n",
+      "action": "wait_for_text",
+      "sessions": [
+        {
+          "session_id": "20260116_210404",
+          "timestamp": "2026-01-16T21:04:39.262111",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_210730",
+          "timestamp": "2026-01-16T21:09:39.754690",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "fa76287ff0fa": {
+      "bug_id": "fa76287ff0fa",
+      "status": "detected",
+      "first_seen": "2026-01-16T21:28:23.085173",
+      "last_seen": "2026-01-16T21:28:23.085175",
+      "occurrences": 1,
+      "error_type": "parameter_error",
+      "error_message": "Неверные параметры для toggle_option: ActionExecutor._execute_toggle_option() missing 1 required positional argument: 'option_text'",
+      "action": "toggle_option",
+      "sessions": [
+        {
+          "session_id": "20260116_212541",
+          "timestamp": "2026-01-16T21:28:23.085176",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "c03f62d020d3": {
+      "bug_id": "c03f62d020d3",
+      "status": "detected",
+      "first_seen": "2026-01-16T21:43:11.990815",
+      "last_seen": "2026-01-16T21:43:11.990817",
+      "occurrences": 1,
+      "error_type": "parameter_error",
+      "error_message": "Неверные параметры для search_and_type: ActionExecutor._execute_search_and_type() missing 1 required positional argument: 'text'",
+      "action": "search_and_type",
+      "sessions": [
+        {
+          "session_id": "20260116_214209",
+          "timestamp": "2026-01-16T21:43:11.990817",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "593a7aefcdfc": {
+      "bug_id": "593a7aefcdfc",
+      "status": "detected",
+      "first_seen": "2026-01-16T21:43:47.588540",
+      "last_seen": "2026-01-16T21:45:55.200865",
+      "occurrences": 2,
+      "error_type": null,
+      "error_message": "Неизвестное действие: read_text",
+      "action": "read_text",
+      "sessions": [
+        {
+          "session_id": "20260116_214209",
+          "timestamp": "2026-01-16T21:43:47.588543",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_214209",
+          "timestamp": "2026-01-16T21:45:55.200867",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "4ebb089c3902": {
+      "bug_id": "4ebb089c3902",
+      "status": "detected",
+      "first_seen": "2026-01-16T22:08:36.769052",
+      "last_seen": "2026-01-16T22:08:36.769055",
+      "occurrences": 1,
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://yandex.ru/pogoda/moscow (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://yandex.ru/pogoda/moscow в обычном браузере\n3. Повторить попытку позже",
+      "action": "navigate",
+      "sessions": [
+        {
+          "session_id": "20260116_220639",
+          "timestamp": "2026-01-16T22:08:36.769056",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    },
+    "77f45b457242": {
+      "bug_id": "77f45b457242",
+      "status": "detected",
+      "first_seen": "2026-01-16T22:08:39.342604",
+      "last_seen": "2026-01-16T22:08:39.343541",
+      "occurrences": 2,
+      "error_type": null,
+      "error_message": "Неизвестное действие: open_in_browser",
+      "action": "open_in_browser",
+      "sessions": [
+        {
+          "session_id": "20260116_220639",
+          "timestamp": "2026-01-16T22:08:39.342607",
+          "source": "production"
+        },
+        {
+          "session_id": "20260116_220639",
+          "timestamp": "2026-01-16T22:08:39.343543",
+          "source": "production"
+        }
+      ],
+      "analysis": null,
+      "fix_commit": null,
+      "verification_date": null,
+      "closed_date": null
+    }
+  },
+  "stats": {
+    "total": 25,
+    "by_status": {
+      "detected": 25,
+      "analyzed": 0,
+      "fixed": 0,
+      "verified": 0,
+      "closed": 0
+    }
+  }
+}

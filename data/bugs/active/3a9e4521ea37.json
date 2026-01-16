@@ -1,0 +1,34 @@
+{
+  "bug_id": "3a9e4521ea37",
+  "status": "detected",
+  "first_seen": "2026-01-16T20:23:48.044308",
+  "last_seen": "2026-01-16T20:23:48.044310",
+  "occurrences": 1,
+  "error_type": null,
+  "error_message": "Не удалось загрузить страницу https://pogoda.ru.net/gorod/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://pogoda.ru.net/gorod/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+  "action": "navigate",
+  "sessions": [
+    {
+      "session_id": "20260116_202303",
+      "timestamp": "2026-01-16T20:23:48.044311",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T20:23:48.044127",
+    "action": "navigate",
+    "params": {
+      "url": "https://pogoda.ru.net/gorod/krasnoyarsk"
+    },
+    "reasoning": "Переход на сайт погоды",
+    "error_type": null,
+    "error_message": "Не удалось загрузить страницу https://pogoda.ru.net/gorod/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://pogoda.ru.net/gorod/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+    "suggestion": null
+  },
+  "history": []
+}

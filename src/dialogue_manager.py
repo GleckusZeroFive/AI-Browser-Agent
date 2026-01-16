@@ -10,10 +10,12 @@ from typing import Optional
 from datetime import datetime
 from src.agent.ai_agent import AIAgent
 from src.agent.action_executor import ActionExecutor
+from src.agent.supervisor_agent import SupervisorAgent
 from src.tools.browser_tools import BrowserTools
 from src.config import Config
 from src.agent.specialized_agents import AgentSelector, TaskType
-from src.agent.context_extractor import ContextExtractor
+from src.agent.knowledge_base import KnowledgeBase
+from src.utils.log_setup import LogSetup
 
 class DialogueManager:
     """Менеджер диалога пользователя с AI агентом"""
@@ -24,9 +26,11 @@ class DialogueManager:
         self.executor = ActionExecutor(self.browser_tools)
         self.browser_started = False
 
-        # Context Extraction Pattern: автоматическое извлечение контекста
-        # Будет инициализирован после создания агента
-        self.context_extractor: Optional[ContextExtractor] = None
+        # SupervisorAgent: реактивный наблюдатель за ошибками
+        self.supervisor = SupervisorAgent(mode="production")
+
+        # Knowledge Base: долговременная память агента
+        self.knowledge_base: Optional[KnowledgeBase] = None
 
         # Sub-agent architecture: отслеживание текущего специализированного агента
         self.current_task_type = TaskType.GENERAL
@@ -35,17 +39,31 @@ class DialogueManager:
         # Настройка логирования
         self._setup_logging()
 
-    async def start(self):
+        # Путь к файлу для логирования ответов агента
+        self.agent_responses_log = LogSetup.setup_agent_response_log()
+
+    async def start(self, sandbox_mode: bool = False):
         """Запустить диалоговую систему"""
         print("=" * 70)
         print("🤖 AI BROWSER AGENT")
         print("=" * 70)
 
-        # Инициализируем агента
+        # Инициализируем knowledge base (долговременная память)
+        self.knowledge_base = KnowledgeBase(
+            llm_client=self.agent.client,
+            storage_path="data/knowledge_base.json"
+        )
+
+        # Очищаем working_memory от прошлой сессии (предотвращает галлюцинации)
+        self.knowledge_base.clear_working_memory()
+
+        # НОВОЕ: Подключаем KB к агенту для оптимизации контекста
+        self.agent.knowledge_base = self.knowledge_base
+
+        # Инициализируем агента с системным промптом
         self.agent.add_system_prompt()
 
-        # Инициализируем context extractor
-        self.context_extractor = ContextExtractor(self.agent.client)
+        print("📚 База знаний загружена (working memory очищена)")
 
         # Запускаем браузер
         print("\n🌐 Запускаю браузер...")
@@ -53,15 +71,16 @@ class DialogueManager:
         self.browser_started = True
         print("✓ Браузер готов\n")
 
+        # Если sandbox mode - запускаем тестирование
+        if sandbox_mode:
+            await self._run_sandbox_mode()
+            return
+
         # ПРИВЕТСТВИЕ ОТ АГЕНТА
-        print("🤖 Агент: Привет! Я автономный AI-агент для работы с браузером.")
-        print("   Могу помочь с:")
-        print("   📧 Удалением спама из почты (Yandex, Gmail)")
-        print("   🍔 Заказом еды (Яндекс.Еда, Delivery Club, Dodopizza)")
-        print("   💼 Поиском вакансий (hh.ru, SuperJob, Habr Career)")
-        print("   🌐 Любыми другими задачами в интернете")
-        print("\n   У меня есть специализированные агенты для каждой задачи!")
-        print("   Какую задачу выполнить?\n")
+        print("🤖 Агент: Привет! Я AI-агент для двух задач:")
+        print("   🌤️  Погода (yandex.ru/pogoda)")
+        print("   🍕 Пицца (Додопицца)")
+        print("\n   Что хочешь узнать?\n")
         print("(Напиши задачу или 'exit' для выхода)\n")
 
         # Главный цикл диалога
@@ -69,6 +88,27 @@ class DialogueManager:
             await self._dialogue_loop()
         finally:
             await self._cleanup()
+
+    async def _run_sandbox_mode(self):
+        """Запустить режим песочницы для самотестирования"""
+        from src.utils.sandbox_mode import SandboxMode
+
+        # Создаём sandbox с увеличенными токенами
+        sandbox = SandboxMode(
+            agent=self.agent,
+            executor=self.executor,
+            browser_tools=self.browser_tools,
+            max_tokens=4000
+        )
+
+        # Запускаем исследование
+        report = await sandbox.run_exploration()
+
+        # Выводим сводку
+        sandbox.print_summary(report)
+
+        print("\n💡 Sandbox mode завершён. Отчёт сохранён в data/sandbox_reports/")
+        print("   Используйте его для анализа проблем с инструментами.\n")
 
     async def _dialogue_loop(self):
         """Основной цикл диалога с улучшенной обработкой ошибок"""
@@ -102,42 +142,94 @@ class DialogueManager:
                     self.current_task_type = task_type
                     self.current_specialized_agent = specialized_agent
 
+                    # НОВОЕ: Уведомляем AIAgent о смене типа задачи
+                    if task_type == TaskType.SHOPPING:
+                        self.agent.set_task_type("shopping")
+                    elif task_type == TaskType.EMAIL:
+                        self.agent.set_task_type("email")
+                    elif task_type == TaskType.JOB_SEARCH:
+                        self.agent.set_task_type("job_search")
+                    else:
+                        self.agent.set_task_type(None)
+
                     # Логируем переключение
                     if specialized_agent:
                         agent_name = specialized_agent.__class__.__name__
                         self.logger.info(f"Переключение на специализированного агента: {agent_name}")
                         print(f"🔄 Активирован специализированный агент: {agent_name}")
 
-                        # Пересоздаём AI агента с новым промптом
-                        self.agent = AIAgent()
-                        self.agent.conversation_history.append({
-                            "role": "system",
-                            "content": specialized_agent.get_system_prompt()
-                        })
-                        # Обновляем модель агента
-                        self.agent.current_model = specialized_agent.get_model()
+                        # ИСПРАВЛЕНИЕ: НЕ пересоздаём агента! Только обновляем системный промпт
+                        # Это сохраняет всю историю разговора
+                        system_prompt = specialized_agent.get_system_prompt()
 
-                        # Обновляем context extractor для нового агента
-                        self.context_extractor = ContextExtractor(self.agent.client)
+                        # Проверяем размер промпта и выбираем подходящую модель
+                        prompt_tokens = self.agent._estimate_tokens(system_prompt)
+                        self.logger.info(f"Размер промпта {agent_name}: {prompt_tokens} токенов")
+
+                        # Выбираем модель с достаточным лимитом
+                        suggested_model = specialized_agent.get_model()
+                        model_limit = Config.MODEL_TOKEN_LIMITS.get(suggested_model, 6000)
+                        safe_limit = int(model_limit * Config.SAFE_TOKEN_MARGIN)
+
+                        if prompt_tokens > safe_limit:
+                            self.logger.warning(
+                                f"Промпт ({prompt_tokens} токенов) превышает безопасный лимит модели "
+                                f"{suggested_model} ({safe_limit} токенов)"
+                            )
+                            # Ищем модель с большим лимитом
+                            suitable_model = self.agent._get_suitable_fallback_model(
+                                prompt_tokens * 2,  # Умножаем на 2 для запаса под историю
+                                exclude_model=None
+                            )
+                            if suitable_model:
+                                self.logger.info(f"Переключение на модель с большим лимитом: {suitable_model}")
+                                print(f"💡 Используется модель с большим лимитом токенов: {suitable_model}")
+                                self.agent.current_model = suitable_model
+                            else:
+                                self.logger.warning("Не найдена подходящая модель, используем модель по умолчанию")
+                                self.agent.current_model = suggested_model
+                        else:
+                            self.agent.current_model = suggested_model
+
+                        # ИСПРАВЛЕНИЕ: Обновляем системный промпт вместо добавления нового
+                        # Используем встроенный метод для обновления
+                        self.agent._update_system_message(system_prompt)
+                        self.agent._cached_system_prompt = system_prompt
+                        self.agent._cached_prompt_level = None  # Инвалидируем кеш
+
+                        # Подключаем KB если отключена
+                        if not self.agent.knowledge_base:
+                            self.agent.knowledge_base = self.knowledge_base
                     else:
                         self.logger.info("Используется общий агент (GENERAL)")
-                        # Сбрасываем на стандартный промпт
-                        self.agent = AIAgent()
-                        self.agent.add_system_prompt()
+                        # ИСПРАВЛЕНИЕ: НЕ пересоздаём агента, только обновляем промпт
+                        base_prompt = self.agent._get_base_system_prompt(self.agent._current_prompt_level)
+                        self.agent._update_system_message(base_prompt)
+                        self.agent._cached_system_prompt = base_prompt
 
-                        # Обновляем context extractor для нового агента
-                        self.context_extractor = ContextExtractor(self.agent.client)
+                # НОВОЕ: Обновляем knowledge base
+                if self.knowledge_base:
+                    await self.knowledge_base.extract_and_update(user_input, "")
 
                 # Отправляем в AI агента
+                # НОВОЕ: agent сам выберет оптимальный уровень контекста
                 print("\n🤖 Агент думает...")
 
                 try:
-                    response = self.agent.chat(user_input)
+                    response = self.agent.chat(
+                        user_input,
+                        context=None,  # Пока без контекста страницы
+                        specialized_agent=self.current_specialized_agent
+                    )
                     self.logger.info(f"Агент ответил: {response[:100]}...")
 
-                    # Context Extraction: извлекаем критичную информацию из диалога
-                    if self.context_extractor:
-                        await self.context_extractor.extract_from_turn(user_input, response)
+                    # НОВОЕ: Показываем статистику токенов (если DEBUG режим)
+                    if Config.DEBUG_MODE:
+                        self._print_token_stats()
+
+                    # Knowledge Base: обновляем после получения ответа
+                    if self.knowledge_base:
+                        await self.knowledge_base.extract_and_update(user_input, response)
 
                 except Exception as api_error:
                     self.logger.error(f"Ошибка API: {api_error}", exc_info=True)
@@ -146,16 +238,29 @@ class DialogueManager:
                     continue
 
                 # ЛОГИРОВАНИЕ: Сохраняем полный ответ агента
-                with open("logs/agent_responses.log", "a", encoding="utf-8") as f:
+                with open(self.agent_responses_log, "a", encoding="utf-8") as f:
                     f.write(f"\n{'='*60}\n")
                     f.write(f"USER: {user_input}\n")
                     f.write(f"AGENT RESPONSE:\n{response}\n")
 
+                # ПРОВЕРКА ГАЛЛЮЦИНАЦИЙ: если агент утверждает что-то - проверяем базу знаний
+                if self.knowledge_base and self.knowledge_base.should_verify_before_claiming(response):
+                    self.logger.warning("Агент делает утверждение - требуется проверка")
+                    # Извлекаем что именно агент утверждает
+                    needs_verification = True
+                    with open(self.agent_responses_log, "a", encoding="utf-8") as f:
+                        f.write(f"⚠️  ТРЕБУЕТСЯ ПРОВЕРКА УТВЕРЖДЕНИЯ\n")
+                else:
+                    needs_verification = False
+
                 # Проверяем, это диалог или действие?
                 action = self.agent.parse_action(response)
 
+                # НОВОЕ: Автоматически обновляем working_memory на основе ответа агента
+                await self._update_working_memory_from_response(user_input, response, action)
+
                 # ЛОГИРОВАНИЕ: Результат парсинга
-                with open("logs/agent_responses.log", "a", encoding="utf-8") as f:
+                with open(self.agent_responses_log, "a", encoding="utf-8") as f:
                     if action:
                         f.write(f"PARSED ACTION: {action}\n")
                     else:
@@ -179,13 +284,29 @@ class DialogueManager:
 
                     else:
                         # Обычное действие - выполняем команду
-                        print(f"\n💭 Агент: {response.split('{')[0].strip()}")
+                        # Извлекаем текст до JSON
+                        text_before_json = response.split('{')[0].strip()
+                        if text_before_json:
+                            print(f"\n🤖 Агент: {text_before_json}")
+
+                        # Показываем что будет выполнено
+                        action_name = action.get("action", "unknown")
+                        reasoning = action.get("reasoning", "")
+                        print(f"⚙️  Выполняю действие: {action_name}")
+                        if reasoning:
+                            print(f"   Причина: {reasoning}")
 
                         await self._execute_action_with_followup(action)
 
                 else:
-                    # Режим диалога - просто отвечаем
-                    print(f"\n🤖 Агент: {response}\n")
+                    # Режим диалога
+                    # Если агент утверждает факт - предупреждаем о необходимости проверки
+                    if needs_verification:
+                        print(f"\n🤖 Агент: {response}")
+                        print("\n⚠️  ВНИМАНИЕ: Агент делает утверждение о существовании чего-либо.")
+                        print("    Попросите агента проверить эту информацию или уточните детали.\n")
+                    else:
+                        print(f"\n🤖 Агент: {response}\n")
 
             except KeyboardInterrupt:
                 print("\n\n👋 Прервано пользователем. До встречи!")
@@ -362,9 +483,16 @@ class DialogueManager:
                         self.logger.info("Действие отменено пользователем через security layer")
                         break
 
-                # Выполняем действие
+                # Выполняем действие через Supervisor (перехватывает ошибки)
                 self.logger.info(f"Выполняю действие: {current_action.get('action')}")
-                result = await self.executor.execute(current_action)
+                result = await self.supervisor.supervised_execute(self.executor, current_action)
+
+                # Проверяем результат - завершение задачи (done/respond/stop)
+                if result.get("status") == "done":
+                    done_message = result.get("message", "Задача выполнена")
+                    print(f"\n🤖 Агент: {done_message}\n")
+                    self.logger.info(f"Задача завершена агентом: {done_message}")
+                    break  # Выходим из цикла действий
 
                 # Проверяем результат на критические ошибки
                 if result.get("status") == "error":
@@ -380,10 +508,30 @@ class DialogueManager:
                         # Пытаемся повторить действие один раз
                         if self.browser_started:
                             print("🔄 Повторяю действие...")
-                            result = await self.executor.execute(current_action)
+                            result = await self.supervisor.supervised_execute(self.executor, current_action)
 
                 # Формируем контекст для агента
                 context = self._format_action_result(result, current_action)
+
+                # Для навигационных действий автоматически добавляем текст страницы
+                # (если Vision не будет использоваться)
+                action_name = current_action.get("action", "")
+                needs_page_context = action_name in ["navigate", "search_and_type", "click_by_text", "scroll_down", "scroll_up"]
+
+                if needs_page_context and result.get("status") == "success":
+                    # Проверяем: будет ли использоваться Vision?
+                    will_use_vision = Config.USE_VISION and self._should_use_vision(current_action, result)
+
+                    if not will_use_vision:
+                        # Vision не будет - получаем текст страницы для контекста
+                        try:
+                            page_result = await self.action_executor.execute({"action": "get_page_text"})
+                            if page_result.get("status") == "success" and "text" in page_result:
+                                context += f"\nТекст страницы:\n{page_result['text']}\n"
+                                if page_result.get("truncated"):
+                                    context += f"(Показано {len(page_result['text'])} из {page_result.get('original_length')} символов)\n"
+                        except Exception as e:
+                            self.logger.warning(f"Не удалось получить текст страницы: {e}")
 
                 # Увеличиваем счётчики
                 actions_count += 1
@@ -400,10 +548,62 @@ class DialogueManager:
                 print("\n🤖 Агент анализирует результат...")
 
                 try:
-                    response = self.agent.chat(
-                        "Результат выполнения действия. Что дальше?",
-                        context=context
-                    )
+                    # Если USE_VISION включен и это действие, которое нужно визуально анализировать
+                    if Config.USE_VISION and self._should_use_vision(current_action, result):
+                        # ВАЖНО: Ждем полной загрузки страницы перед скриншотом
+                        action_name = current_action.get("action", "")
+
+                        # Для навигации и поиска - дополнительное ожидание загрузки контента
+                        if action_name in ["navigate", "search_and_type", "click_by_text"]:
+                            self.logger.info("Ожидаю загрузки динамического контента...")
+                            await asyncio.sleep(3)  # Дополнительное время для AJAX/React/lazy loading
+
+                            # Дополнительно ждем сетевой активности
+                            try:
+                                await self.browser_tools.page.wait_for_load_state("networkidle", timeout=5000)
+                            except Exception as e:
+                                self.logger.debug(f"Timeout при ожидании networkidle: {e}")
+
+                        # Делаем скриншот для анализа
+                        screenshot_result = await self.browser_tools.take_screenshot()
+
+                        if screenshot_result.get("status") == "success":
+                            screenshot_path = screenshot_result.get("path")
+                            self.logger.info(f"Используем Vision API с скриншотом: {screenshot_path}")
+                            print("📸 Анализирую скриншот страницы...")
+
+                            response = self.agent.chat_with_vision(
+                                "Результат выполнения действия. Что дальше?",
+                                image_path=screenshot_path,
+                                specialized_agent=self.current_specialized_agent
+                            )
+                        else:
+                            # Скриншот не удался - получаем текст страницы как fallback
+                            self.logger.warning("Не удалось сделать скриншот, получаю текст страницы")
+                            print("⚠️ Скриншот не удался, читаю текст страницы...")
+
+                            try:
+                                # get_page_text автоматически ограничивает текст до 800 символов
+                                page_result = await self.action_executor.execute({"action": "get_page_text"})
+                                if page_result.get("status") == "success" and "text" in page_result:
+                                    context += f"\nТекст страницы:\n{page_result['text']}\n"
+                                    if page_result.get("truncated"):
+                                        context += f"(Текст обрезан: {page_result.get('original_length')} → {len(page_result['text'])} символов)\n"
+                            except Exception as e:
+                                self.logger.warning(f"Не удалось получить текст страницы: {e}")
+
+                            response = self.agent.chat(
+                                "Результат выполнения действия. Что дальше?",
+                                context=context,
+                                specialized_agent=self.current_specialized_agent
+                            )
+                    else:
+                        # Используем обычный текстовый режим
+                        response = self.agent.chat(
+                            "Результат выполнения действия. Что дальше?",
+                            context=context,
+                            specialized_agent=self.current_specialized_agent
+                        )
                 except Exception as api_error:
                     self.logger.error(f"Ошибка API при анализе результата: {api_error}", exc_info=True)
                     print(f"\n❌ Ошибка API: {api_error}")
@@ -496,6 +696,51 @@ class DialogueManager:
             print(f"\n⚠️ Выполнено {total_actions} действий за {cycle_count} циклов.")
             print("🤖 Агент: К сожалению, не удалось найти точный ответ. Попробуйте переформулировать запрос.\n")
 
+    def _should_use_vision(self, action: dict, result: dict) -> bool:
+        """
+        Определить, нужно ли использовать Vision API для анализа результата
+
+        Vision ДЕЙСТВИТЕЛЬНО полезен только для:
+        - Модальных окон (конструктор блюд, попапы)
+        - Интерактивных элементов (кнопки, чекбоксы, селекторы)
+        - Случаев когда текст не дает полной картины
+
+        Vision ИЗБЫТОЧЕН для:
+        - Обычной навигации (текст страницы достаточен)
+        - Чтения меню и списков (текст лучше и быстрее)
+        - Поиска (результаты в тексте)
+        - Скролла (текст показывает контент)
+
+        Args:
+            action: выполненное действие
+            result: результат действия
+
+        Returns:
+            True если нужен Vision API
+        """
+        # Если действие завершилось ошибкой - Vision не нужен
+        if result.get("status") != "success":
+            return False
+
+        action_name = action.get("action", "")
+
+        # Проверяем URL - для погоды Vision НУЖЕН
+        url = result.get("url", "")
+        if "pogoda" in url.lower() or "weather" in url.lower():
+            return True  # Погода - большие цифры, иконки, визуальная инфо
+
+        # Vision только для ИНТЕРАКТИВНЫХ действий и модальных окон
+        vision_actions = [
+            "wait_for_modal",              # Модальное окно появилось - нужно видеть
+            "get_modal_text",              # Читаем модалку - может быть интерактивной
+            "get_dish_customization_options",  # Конструктор - интерактивные элементы
+            "toggle_option",               # Переключили опцию - нужно видеть результат
+            "adjust_quantity",             # Изменили количество - проверить визуально
+            "select_size",                 # Выбрали размер - увидеть изменения
+        ]
+
+        return action_name in vision_actions
+
     def _format_action_result(self, result: dict, action: dict) -> str:
         """Форматировать результат действия для агента"""
         action_name = action.get("action", "unknown")
@@ -507,9 +752,18 @@ class DialogueManager:
         if status == "success":
             # Добавляем полезную информацию из результата
             if "text" in result:
-                # Ограничиваем текст страницы
-                text = result["text"][:3000]  # первые 3000 символов
-                context += f"\nТекст страницы (начало):\n{text}\n"
+                # Ограничиваем текст страницы (экономия токенов)
+                # get_page_text уже ограничен до 800 символов в action_executor
+                # Если Vision включен — дополнительно обрезаем до 500 (скриншоты важнее текста)
+                max_text_length = 500 if Config.USE_VISION else 1000
+                text = result["text"][:max_text_length]
+
+                # Показываем информацию об обрезке
+                original_len = result.get("original_length", len(result["text"]))
+                if len(result["text"]) > max_text_length or result.get("truncated"):
+                    text += f"\n... (показано {len(text)} из {original_len} символов)"
+
+                context += f"\nТекст страницы:\n{text}\n"
 
             if "url" in result:
                 context += f"URL: {result['url']}\n"
@@ -524,38 +778,14 @@ class DialogueManager:
             # Ошибка
             context += f"Ошибка: {result.get('message', 'Неизвестная ошибка')}\n"
 
-        # Context Extraction Pattern: добавляем только релевантный контекст для этого действия
-        if self.context_extractor:
-            relevant_context = self.context_extractor.get_context_for_action(action_name)
-            if relevant_context:
-                context += f"\n{relevant_context}"
-
         return context
 
 
     def _setup_logging(self):
-        """Настроить систему логирования"""
-        import os
-        os.makedirs("logs", exist_ok=True)
-
-        # Настройка основного логгера
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s [%(levelname)s] %(message)s',
-            handlers=[
-                logging.FileHandler('logs/dialogue_manager.log', encoding='utf-8')
-            ]
-        )
-
+        """Настроить систему логирования с ротацией"""
+        # Используем новую систему логирования с автоматической ротацией
+        LogSetup.setup_logging(log_dir="logs")
         self.logger = logging.getLogger(__name__)
-
-        # Отдельный файл для ошибок
-        error_handler = logging.FileHandler('logs/errors.log', encoding='utf-8')
-        error_handler.setLevel(logging.ERROR)
-        error_handler.setFormatter(
-            logging.Formatter('%(asctime)s [ERROR] %(message)s\n')
-        )
-        self.logger.addHandler(error_handler)
 
     def _is_exit_command(self, user_input: str) -> bool:
         """
@@ -631,13 +861,16 @@ class DialogueManager:
         final_phrases = [
             "рекомендую", "предлагаю", "нашёл", "есть вариант",
             "подойдёт", "к сожалению", "увы", "не могу найти",
-            "вот что", "можешь выбрать", "попробуй"
+            "вот что", "можешь выбрать", "попробуй",
+            # Погода
+            "температура", "градус", "осадк", "прогноз", "погода",
+            "ощущается", "ветер", "влажность"
         ]
         if any(phrase in response_lower for phrase in final_phrases):
             return False
 
-        # Если содержит цену - это конкретный результат
-        if "₽" in response or "руб" in response_lower:
+        # Если содержит цену или градусы - это конкретный результат
+        if "₽" in response or "руб" in response_lower or "°" in response:
             return False
 
         # По умолчанию - завершаем (на всякий случай не зацикливаем)
@@ -741,8 +974,135 @@ class DialogueManager:
                 print("Попробуйте перезапустить программу\n")
                 self.browser_started = False
 
+    def _print_token_stats(self):
+        """Выводит статистику использования токенов в консоль"""
+        try:
+            stats = self.agent.get_token_usage_stats()
+
+            print("\n" + "="*60)
+            print("📊 СТАТИСТИКА ИСПОЛЬЗОВАНИЯ ТОКЕНОВ")
+            print("="*60)
+            print(f"  🤖 Модель: {stats['model']}")
+            print(f"  📏 Лимит модели: {stats['model_limit']} токенов")
+            print(f"  ✅ Безопасный лимит: {stats['safe_limit']} токенов")
+            print(f"  📊 Использовано: {stats['used_tokens']} токенов ({stats['usage_percent']:.1f}%)")
+            print(f"  💾 Доступно: {stats['available_tokens']} токенов")
+            print("-"*60)
+            print(f"  📋 Уровень контекста: {stats['context_level'].upper()}")
+            print(f"  📝 Уровень промпта: {stats['prompt_level'].upper()}")
+            print(f"  🎯 Тип задачи: {stats['task_type'] or 'Общая'}")
+            print(f"  💰 Экономия KB: {stats['kb_savings_percent']}%")
+            print("="*60 + "\n")
+
+        except Exception as e:
+            self.logger.error(f"Ошибка при выводе статистики: {e}")
+
+    async def _update_working_memory_from_response(
+        self,
+        user_input: str,
+        agent_response: str,
+        action: Optional[dict] = None
+    ):
+        """
+        Автоматически обновляет working_memory на основе ответа агента
+
+        Анализирует ответ и определяет:
+        - Текущую задачу (что делает агент)
+        - Где находится (на какой странице)
+        - Какие варианты показал (для выбора пользователем)
+        - Последнее действие
+
+        Args:
+            user_input: Запрос пользователя
+            agent_response: Ответ агента
+            action: Действие, которое собирается выполнить агент
+        """
+        if not self.knowledge_base:
+            return
+
+        import re
+
+        # 1. Определяем текущую задачу
+        current_task = None
+        if action:
+            reasoning = action.get("reasoning", "")
+            action_name = action.get("action", "")
+
+            # Извлекаем задачу из reasoning или action
+            if "заказ" in reasoning.lower() or "ищу" in reasoning.lower():
+                # Пытаемся извлечь что именно заказываем
+                match = re.search(r'(заказ\w*|ищу|найти)\s+([^.]+)', reasoning, re.IGNORECASE)
+                if match:
+                    current_task = match.group(0)
+            elif action_name == "navigate":
+                url = action.get("params", {}).get("url", "")
+                if "dodo" in url.lower():
+                    current_task = f"Заказ из Додопиццы"
+
+        # 2. Определяем текущую страницу
+        current_page = None
+        if action:
+            action_name = action.get("action", "")
+            if action_name == "navigate":
+                url = action.get("params", {}).get("url", "")
+                if url:
+                    # Извлекаем домен
+                    domain_match = re.search(r'https?://([^/]+)', url)
+                    if domain_match:
+                        current_page = f"переход на {domain_match.group(1)}"
+            elif action_name in ["search_and_type", "click_by_text"]:
+                current_page = "на странице поиска/результатов"
+
+        # 3. Определяем показанные варианты
+        shown_options = []
+        # Ищем нумерованные списки в ответе: "1. ...", "2. ..."
+        list_matches = re.findall(r'^\s*\d+\.\s*([^\n]+)', agent_response, re.MULTILINE)
+        if list_matches and len(list_matches) >= 2:
+            # Если найдено 2+ вариантов - это показ вариантов
+            shown_options = list_matches[:5]  # Максимум 5
+
+        # 4. Определяем последнее действие
+        last_action = None
+        if action:
+            action_name = action.get("action", "")
+            if shown_options:
+                last_action = f"показал {len(shown_options)} вариантов"
+            elif action_name == "navigate":
+                last_action = "переход на новую страницу"
+            elif action_name == "search_and_type":
+                last_action = "поиск"
+            elif action_name == "click_by_text":
+                last_action = "клик по элементу"
+            elif action_name == "get_page_text":
+                last_action = "чтение страницы"
+
+        # Обновляем working memory только если есть что обновлять
+        if any([current_task, current_page, shown_options, last_action]):
+            self.knowledge_base.set_working_context(
+                current_task=current_task,
+                current_page=current_page,
+                shown_options=shown_options if shown_options else None,
+                last_action=last_action
+            )
+            self.logger.debug(
+                f"Working memory обновлена: task={current_task}, "
+                f"page={current_page}, options={len(shown_options) if shown_options else 0}"
+            )
+
     async def _cleanup(self):
         """Очистка ресурсов"""
+        # Сохраняем статистику supervisor
+        if self.supervisor:
+            self.supervisor.save_session_summary()
+
+            # Выводим статистику
+            stats = self.supervisor.get_statistics()
+            if stats["total_errors"] > 0:
+                self.logger.info(
+                    f"Session stats: {stats['total_errors']} errors "
+                    f"({stats['runtime_errors']} runtime, {stats['structured_errors']} structured)"
+                )
+
         if self.browser_started:
             print("\n🔒 Закрываю браузер...")
             await self.browser_tools.close_browser()

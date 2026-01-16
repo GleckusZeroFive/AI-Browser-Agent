@@ -1,0 +1,34 @@
+{
+  "bug_id": "7e41734f105d",
+  "status": "detected",
+  "first_seen": "2026-01-16T11:30:10.002373",
+  "last_seen": "2026-01-16T11:30:10.002376",
+  "occurrences": 1,
+  "error_type": null,
+  "error_message": "Не удалось загрузить страницу https://2gis.ru/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://2gis.ru/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+  "action": "navigate",
+  "sessions": [
+    {
+      "session_id": "20260116_112833",
+      "timestamp": "2026-01-16T11:30:10.002378",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T11:30:10.002151",
+    "action": "navigate",
+    "params": {
+      "url": "https://2gis.ru/krasnoyarsk"
+    },
+    "reasoning": "Перехожу на 2ГИС для Красноярска",
+    "error_type": null,
+    "error_message": "Не удалось загрузить страницу https://2gis.ru/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://2gis.ru/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+    "suggestion": null
+  },
+  "history": []
+}

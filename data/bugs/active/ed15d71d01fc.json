@@ -1,0 +1,40 @@
+{
+  "bug_id": "ed15d71d01fc",
+  "status": "detected",
+  "first_seen": "2026-01-16T21:04:39.262107",
+  "last_seen": "2026-01-16T21:09:39.754687",
+  "occurrences": 2,
+  "error_type": null,
+  "error_message": "Текст не появился: Locator.wait_for: Timeout 10000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Начать поиск\").first to be visible\n",
+  "action": "wait_for_text",
+  "sessions": [
+    {
+      "session_id": "20260116_210404",
+      "timestamp": "2026-01-16T21:04:39.262111",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_210730",
+      "timestamp": "2026-01-16T21:09:39.754690",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T21:09:39.754439",
+    "action": "wait_for_text",
+    "params": {
+      "text": "Пепперони от Империя пицца",
+      "timeout": 10000
+    },
+    "reasoning": "Жду загрузки страницы.",
+    "error_type": null,
+    "error_message": "Текст не появился: Locator.wait_for: Timeout 10000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Пепперони от Империя пицца\").first to be visible\n",
+    "suggestion": null
+  },
+  "history": []
+}

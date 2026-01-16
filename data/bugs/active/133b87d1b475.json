@@ -1,0 +1,45 @@
+{
+  "bug_id": "133b87d1b475",
+  "status": "detected",
+  "first_seen": "2026-01-16T11:11:21.608498",
+  "last_seen": "2026-01-16T11:14:58.760220",
+  "occurrences": 3,
+  "error_type": null,
+  "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+  "action": "type_text",
+  "sessions": [
+    {
+      "session_id": "20260116_105937",
+      "timestamp": "2026-01-16T11:11:21.608505",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_111257",
+      "timestamp": "2026-01-16T11:14:27.750274",
+      "source": "sandbox"
+    },
+    {
+      "session_id": "20260116_111257",
+      "timestamp": "2026-01-16T11:14:58.760233",
+      "source": "sandbox"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T11:14:58.757724",
+    "action": "type_text",
+    "params": {
+      "selector": "input[type='search']",
+      "text": "пицца 549 рублей"
+    },
+    "reasoning": "Sandbox тест: alternative",
+    "error_type": null,
+    "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+    "suggestion": null
+  },
+  "history": []
+}

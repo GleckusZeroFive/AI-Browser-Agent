@@ -1,0 +1,22 @@
+{
+  "session_id": "20260116_205043",
+  "timestamp": "2026-01-16T20:54:11.269307",
+  "total_errors": 1,
+  "runtime_errors": 0,
+  "structured_errors": 1,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T20:51:11.336074",
+      "action": "search_and_type",
+      "params": {
+        "text": "пицца",
+        "timeout": 10000
+      },
+      "reasoning": "Ищу пиццу",
+      "error_type": "parameter_error",
+      "error_message": "Неверные параметры для search_and_type: ActionExecutor._execute_search_and_type() got an unexpected keyword argument 'timeout'",
+      "suggestion": "Проверьте формат параметров для этого действия"
+    }
+  ]
+}

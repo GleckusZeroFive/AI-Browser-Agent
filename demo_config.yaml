@@ -1,0 +1,103 @@
+# Конфигурация Demo Mode для AI Browser Agent
+# Используется для записи скринкастов и демонстрации работы агента
+
+demo_mode:
+  # Включить режим демонстрации
+  enabled: false
+
+  # Задержки между действиями (в секундах)
+  delays:
+    # Задержка перед выполнением каждого действия
+    before_action: 1.0
+
+    # Задержка после выполнения действия
+    after_action: 0.5
+
+    # Задержка для показа визуальных индикаторов
+    visual_indicator: 1.5
+
+    # Задержка между показом кода и выполнением
+    code_to_action: 0.8
+
+  # Визуальные маркеры
+  visual_markers:
+    # Включить визуальные маркеры в браузере
+    enabled: true
+
+    # Подсветка элементов при клике
+    highlight_clicks: true
+
+    # Анимация при вводе текста
+    show_typing: true
+
+    # Индикатор скролла
+    show_scroll: true
+
+    # Индикатор текущего действия
+    show_action_indicator: true
+
+    # Длительность анимаций (в миллисекундах)
+    animation_duration: 600
+
+  # Логирование
+  logging:
+    # Уровень детализации: minimal, normal, verbose
+    level: verbose
+
+    # Показывать строку кода перед выполнением
+    show_code_line: true
+
+    # Показывать имя функции
+    show_function_name: true
+
+    # Показывать аргументы функции
+    show_arguments: true
+
+    # Показывать время выполнения
+    show_duration: true
+
+    # Включить цветной вывод в консоль
+    colorized_console: true
+
+    # Файл для детального лога
+    detailed_log_file: "logs/demo_execution.log"
+
+  # OBS Studio настройки (рекомендации)
+  obs_recommendations:
+    # Разрешение записи
+    resolution: "1920x1080"
+
+    # FPS
+    fps: 60
+
+    # Layout: split-screen (код слева, браузер справа)
+    layout: "split-screen"
+
+    # Позиция терминала с логами
+    terminal_position: "left"
+
+    # Позиция браузера
+    browser_position: "right"
+
+    # Размер каждого окна (процент от ширины экрана)
+    split_ratio: "50:50"
+
+# Стандартные настройки (можно переопределить)
+standard:
+  # Задержки отключены
+  delays:
+    before_action: 0.0
+    after_action: 0.0
+    visual_indicator: 0.5
+    code_to_action: 0.0
+
+  visual_markers:
+    enabled: false
+
+  logging:
+    level: normal
+    show_code_line: false
+    show_function_name: true
+    show_arguments: false
+    show_duration: false
+    colorized_console: true

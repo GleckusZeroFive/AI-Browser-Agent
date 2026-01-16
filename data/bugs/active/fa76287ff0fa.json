@@ -1,0 +1,35 @@
+{
+  "bug_id": "fa76287ff0fa",
+  "status": "detected",
+  "first_seen": "2026-01-16T21:28:23.085173",
+  "last_seen": "2026-01-16T21:28:23.085175",
+  "occurrences": 1,
+  "error_type": "parameter_error",
+  "error_message": "Неверные параметры для toggle_option: ActionExecutor._execute_toggle_option() missing 1 required positional argument: 'option_text'",
+  "action": "toggle_option",
+  "sessions": [
+    {
+      "session_id": "20260116_212541",
+      "timestamp": "2026-01-16T21:28:23.085176",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T21:28:23.085001",
+    "action": "toggle_option",
+    "params": {
+      "text": "Сырный бортик",
+      "action": "add"
+    },
+    "reasoning": "Добавляю доп опцию",
+    "error_type": "parameter_error",
+    "error_message": "Неверные параметры для toggle_option: ActionExecutor._execute_toggle_option() missing 1 required positional argument: 'option_text'",
+    "suggestion": "Проверьте формат параметров для этого действия"
+  },
+  "history": []
+}

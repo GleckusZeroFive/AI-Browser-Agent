@@ -1,0 +1,37 @@
+{
+  "bug_id": "593a7aefcdfc",
+  "status": "detected",
+  "first_seen": "2026-01-16T21:43:47.588540",
+  "last_seen": "2026-01-16T21:45:55.200865",
+  "occurrences": 2,
+  "error_type": null,
+  "error_message": "Неизвестное действие: read_text",
+  "action": "read_text",
+  "sessions": [
+    {
+      "session_id": "20260116_214209",
+      "timestamp": "2026-01-16T21:43:47.588543",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_214209",
+      "timestamp": "2026-01-16T21:45:55.200867",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T21:45:55.200762",
+    "action": "read_text",
+    "params": {},
+    "reasoning": "Чтение страницы внимательнее",
+    "error_type": null,
+    "error_message": "Неизвестное действие: read_text",
+    "suggestion": null
+  },
+  "history": []
+}

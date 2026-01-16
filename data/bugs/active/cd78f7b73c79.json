@@ -1,0 +1,35 @@
+{
+  "bug_id": "cd78f7b73c79",
+  "status": "detected",
+  "first_seen": "2026-01-16T20:31:20.617094",
+  "last_seen": "2026-01-16T20:31:20.617096",
+  "occurrences": 1,
+  "error_type": null,
+  "error_message": "Ошибка ввода текста: Page.fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]\nCall log:\n  - waiting for locator(\"body\")\n    - locator resolved to <body>…</body>\n    - fill(\"Погода в Москве сейчас: -9°, ясно, ощущается как -12°, без осадков, давление 766 мм рт. ст., влажность 83%. Предупреждение Гидрометцентра: гололедица.\")\n  - attempting fill action\n    - waiting for element to be visible, enabled and editable\n",
+  "action": "type_text",
+  "sessions": [
+    {
+      "session_id": "20260116_203034",
+      "timestamp": "2026-01-16T20:31:20.617097",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T20:31:20.616954",
+    "action": "type_text",
+    "params": {
+      "selector": "body",
+      "text": "Погода в Москве сейчас: -9°, ясно, ощущается как -12°, без осадков, давление 766 мм рт. ст., влажность 83%. Предупреждение Гидрометцентра: гололедица."
+    },
+    "reasoning": "",
+    "error_type": null,
+    "error_message": "Ошибка ввода текста: Page.fill: Error: Element is not an <input>, <textarea>, <select> or [contenteditable] and does not have a role allowing [aria-readonly]\nCall log:\n  - waiting for locator(\"body\")\n    - locator resolved to <body>…</body>\n    - fill(\"Погода в Москве сейчас: -9°, ясно, ощущается как -12°, без осадков, давление 766 мм рт. ст., влажность 83%. Предупреждение Гидрометцентра: гололедица.\")\n  - attempting fill action\n    - waiting for element to be visible, enabled and editable\n",
+    "suggestion": null
+  },
+  "history": []
+}

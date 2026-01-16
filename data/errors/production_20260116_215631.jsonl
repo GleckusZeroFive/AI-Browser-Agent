@@ -1,0 +1,1 @@
+{"type": "structured", "timestamp": "2026-01-16T21:58:03.245592", "action": "get_modal_text", "params": {}, "reasoning": "Показ меню пиццы", "error_type": null, "error_message": "Модальное окно не найдено или пустое", "suggestion": null}

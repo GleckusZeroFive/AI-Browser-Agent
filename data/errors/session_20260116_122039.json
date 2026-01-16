@@ -1,0 +1,19 @@
+{
+  "session_id": "20260116_122039",
+  "timestamp": "2026-01-16T12:23:25.212401",
+  "total_errors": 1,
+  "runtime_errors": 0,
+  "structured_errors": 1,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T12:22:25.193149",
+      "action": "get_modal_text",
+      "params": {},
+      "reasoning": "Получаю состав блюда пепперони",
+      "error_type": null,
+      "error_message": "Модальное окно не найдено или пустое",
+      "suggestion": null
+    }
+  ]
+}

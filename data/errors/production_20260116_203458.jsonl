@@ -1,0 +1,1 @@
+{"type": "structured", "timestamp": "2026-01-16T20:36:06.743652", "action": "type_text", "params": {"selector": "#search-input", "text": "Санкт-Петербург"}, "reasoning": "Ввод города в поисковое поле", "error_type": null, "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#search-input\")\n", "suggestion": null}

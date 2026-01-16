@@ -1,0 +1,43 @@
+{
+  "session_id": "20260116_112833",
+  "timestamp": "2026-01-16T11:33:43.661299",
+  "total_errors": 3,
+  "runtime_errors": 0,
+  "structured_errors": 3,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:29:34.738648",
+      "action": "search_and_type",
+      "params": {
+        "text": "пицца"
+      },
+      "reasoning": "Ищу пиццу на Delivery Club",
+      "error_type": null,
+      "error_message": "Не удалось найти поле поиска. Попробовано 0 селекторов.",
+      "suggestion": null
+    },
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:30:10.002151",
+      "action": "navigate",
+      "params": {
+        "url": "https://2gis.ru/krasnoyarsk"
+      },
+      "reasoning": "Перехожу на 2ГИС для Красноярска",
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://2gis.ru/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://2gis.ru/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+      "suggestion": null
+    },
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:30:22.320588",
+      "action": "get_modal_text",
+      "params": {},
+      "reasoning": "Получаю информацию о выбранной пицце",
+      "error_type": null,
+      "error_message": "Модальное окно не найдено или пустое",
+      "suggestion": null
+    }
+  ]
+}

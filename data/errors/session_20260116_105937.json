@@ -1,0 +1,58 @@
+{
+  "session_id": "20260116_105937",
+  "timestamp": "2026-01-16T11:12:03.736367",
+  "total_errors": 4,
+  "runtime_errors": 0,
+  "structured_errors": 4,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:01:00.031767",
+      "action": "navigate",
+      "params": {
+        "url": "https://pizzacity.ru/krasnoyarsk"
+      },
+      "reasoning": "Переход на сайт Pizza City в Красноярске",
+      "error_type": null,
+      "error_message": "Ошибка при переходе на https://pizzacity.ru/krasnoyarsk (Error).\nДетали: Page.goto: NS_ERROR_UNKNOWN_HOST\nCall log:\n  - navigating to \"https://pizzacity.ru/krasnoyarsk\", waiting until \"domcontentloaded\"\n",
+      "suggestion": null
+    },
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:02:06.556733",
+      "action": "navigate",
+      "params": {
+        "url": "https://yandex.ru/eats/krasnoyarsk"
+      },
+      "reasoning": "Переход на Яндекс.Еду в Красноярске",
+      "error_type": null,
+      "error_message": "Не удалось загрузить страницу https://yandex.ru/eats/krasnoyarsk (превышен таймаут).\nВозможные причины:\n- Медленное интернет-соединение\n- Сайт недоступен или перегружен\n- Проблемы с сетью\n\nПопробуйте:\n1. Проверить интернет-соединение\n2. Открыть https://yandex.ru/eats/krasnoyarsk в обычном браузере\n3. Повторить попытку позже",
+      "suggestion": null
+    },
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:07:15.534660",
+      "action": "navigate",
+      "params": {
+        "url": "https://delivery-club.ru/krasnoyarsk"
+      },
+      "reasoning": "Переход на Delivery Club в Красноярске",
+      "error_type": null,
+      "error_message": "Капча не решена на https://delivery-club.ru/krasnoyarsk. Таймаут ожидания (300с). Капча не решена.",
+      "suggestion": null
+    },
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:11:21.608045",
+      "action": "type_text",
+      "params": {
+        "selector": "input[type='search']",
+        "text": "пицца 549 рублей"
+      },
+      "reasoning": "Ввод текста в поисковое поле",
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+      "suggestion": null
+    }
+  ]
+}

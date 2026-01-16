@@ -1,0 +1,19 @@
+{
+  "session_id": "20260116_115438",
+  "timestamp": "2026-01-16T12:03:29.776289",
+  "total_errors": 1,
+  "runtime_errors": 0,
+  "structured_errors": 1,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-16T11:55:54.266213",
+      "action": "wait_for_results",
+      "params": {},
+      "reasoning": "Жду результатов поиска",
+      "error_type": null,
+      "error_message": "Неизвестное действие: wait_for_results",
+      "suggestion": null
+    }
+  ]
+}

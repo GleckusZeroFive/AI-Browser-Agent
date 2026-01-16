@@ -39,7 +39,14 @@ class SystemCheck:
         """
         try:
             import playwright
-            return True, f"✓ Playwright {playwright.__version__}"
+            # Получаем версию через importlib.metadata
+            try:
+                from importlib.metadata import version
+                pw_version = version('playwright')
+                return True, f"✓ Playwright {pw_version}"
+            except Exception:
+                # Если не удалось получить версию, просто подтверждаем установку
+                return True, "✓ Playwright установлен"
         except ImportError:
             return False, (
                 "❌ Playwright не установлен\n"

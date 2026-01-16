@@ -1,0 +1,49 @@
+{
+  "bug_id": "3c8e604f4959",
+  "status": "detected",
+  "first_seen": "2026-01-16T20:24:09.312521",
+  "last_seen": "2026-01-16T20:31:21.874324",
+  "occurrences": 4,
+  "error_type": null,
+  "error_message": "Неизвестное действие: stop",
+  "action": "stop",
+  "sessions": [
+    {
+      "session_id": "20260116_202303",
+      "timestamp": "2026-01-16T20:24:09.312523",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_203034",
+      "timestamp": "2026-01-16T20:31:16.534990",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_203034",
+      "timestamp": "2026-01-16T20:31:18.430482",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_203034",
+      "timestamp": "2026-01-16T20:31:21.874325",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T20:31:21.874234",
+    "action": "stop",
+    "params": {
+      "result": "Погода в Москве сейчас: -9°, ясно, ощущается как -12°, без осадков, давление 766 мм рт. ст., влажность 83%. Предупреждение Гидрометцентра: гололедица."
+    },
+    "reasoning": "",
+    "error_type": null,
+    "error_message": "Неизвестное действие: stop",
+    "suggestion": null
+  },
+  "history": []
+}

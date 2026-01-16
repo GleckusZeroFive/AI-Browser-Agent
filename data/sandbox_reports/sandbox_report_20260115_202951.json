@@ -1,0 +1,225 @@
+{
+  "timestamp": "2026-01-15T20:29:51.528476",
+  "summary": {
+    "total_tests": 14,
+    "successful": 10,
+    "failed": 3,
+    "skipped": 0,
+    "success_rate": 71.43
+  },
+  "functionality_map": {
+    "navigate": "working",
+    "click_by_text": "working",
+    "get_page_text": "working",
+    "scroll_down": "working",
+    "scroll_up": "working",
+    "press_key": "working",
+    "type_text": "broken",
+    "take_screenshot": "working",
+    "wait_for_text": "broken",
+    "find_text": "working",
+    "close_modal": "working",
+    "wait_for_modal": "unknown",
+    "get_modal_text": "broken"
+  },
+  "errors": {
+    "by_type": {
+      "parameter_error": 2,
+      "null": 1
+    },
+    "by_action": {
+      "type_text": [
+        {
+          "scenario": "Тест type_text",
+          "error": "Неверные параметры для type_text: ActionExecutor._execute_type_text() missing 2 required positional arguments: 'selector' and 'text'",
+          "error_type": "parameter_error"
+        }
+      ],
+      "wait_for_text": [
+        {
+          "scenario": "Тест wait_for_text",
+          "error": "Неверные параметры для wait_for_text: ActionExecutor._execute_wait_for_text() missing 1 required positional argument: 'text'",
+          "error_type": "parameter_error"
+        }
+      ],
+      "get_modal_text": [
+        {
+          "scenario": "Тест get_modal_text",
+          "error": "Модальное окно не найдено или пустое",
+          "error_type": null
+        }
+      ]
+    }
+  },
+  "executor_stats": {
+    "total_errors": 2,
+    "by_type": {
+      "TypeError": 2
+    },
+    "by_action": {
+      "type_text": 1,
+      "wait_for_text": 1
+    },
+    "recent_errors": [
+      {
+        "timestamp": "2026-01-15T20:29:18.540518",
+        "action": "type_text",
+        "error_type": "TypeError",
+        "error": "ActionExecutor._execute_type_text() missing 2 required positional arguments: 'selector' and 'text'",
+        "params": {}
+      },
+      {
+        "timestamp": "2026-01-15T20:29:20.591866",
+        "action": "wait_for_text",
+        "error_type": "TypeError",
+        "error": "ActionExecutor._execute_wait_for_text() missing 1 required positional argument: 'text'",
+        "params": {}
+      }
+    ]
+  },
+  "detailed_results": [
+    {
+      "scenario": "Навигация на Google",
+      "action": "navigate",
+      "params": {
+        "url": "https://www.google.com"
+      },
+      "timestamp": "2026-01-15T20:28:47.167766",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3805
+    },
+    {
+      "scenario": "Навигация на Example.com",
+      "action": "navigate",
+      "params": {
+        "url": "https://example.com"
+      },
+      "timestamp": "2026-01-15T20:28:51.974563",
+      "status": "success",
+      "error": null,
+      "duration_ms": 2969
+    },
+    {
+      "scenario": "Клик по тексту 'Example Domain'",
+      "action": "click_by_text",
+      "params": {
+        "text": "Example Domain"
+      },
+      "timestamp": "2026-01-15T20:28:55.945177",
+      "status": "success",
+      "error": null,
+      "duration_ms": 4084
+    },
+    {
+      "scenario": "Получение текста страницы",
+      "action": "get_page_text",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:01.031145",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3065
+    },
+    {
+      "scenario": "Прокрутка вниз на 500px",
+      "action": "scroll_down",
+      "params": {
+        "pixels": 500
+      },
+      "timestamp": "2026-01-15T20:29:05.098568",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3557
+    },
+    {
+      "scenario": "Прокрутка вверх на 300px",
+      "action": "scroll_up",
+      "params": {
+        "pixels": 300
+      },
+      "timestamp": "2026-01-15T20:29:09.662822",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3541
+    },
+    {
+      "scenario": "Нажатие клавиши Escape",
+      "action": "press_key",
+      "params": {
+        "key": "Escape"
+      },
+      "timestamp": "2026-01-15T20:29:14.204532",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3332
+    },
+    {
+      "scenario": "Тест type_text",
+      "action": "type_text",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:18.538130",
+      "status": "failed",
+      "error": "Неверные параметры для type_text: ActionExecutor._execute_type_text() missing 2 required positional arguments: 'selector' and 'text'",
+      "duration_ms": 2,
+      "error_type": "parameter_error"
+    },
+    {
+      "scenario": "Тест take_screenshot",
+      "action": "take_screenshot",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:19.541681",
+      "status": "success",
+      "error": null,
+      "duration_ms": 48
+    },
+    {
+      "scenario": "Тест wait_for_text",
+      "action": "wait_for_text",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:20.591165",
+      "status": "failed",
+      "error": "Неверные параметры для wait_for_text: ActionExecutor._execute_wait_for_text() missing 1 required positional argument: 'text'",
+      "duration_ms": 0,
+      "error_type": "parameter_error"
+    },
+    {
+      "scenario": "Поиск текста 'Example'",
+      "action": "find_text",
+      "params": {
+        "search_text": "Example"
+      },
+      "timestamp": "2026-01-15T20:29:21.593493",
+      "status": "success",
+      "error": null,
+      "duration_ms": 4884
+    },
+    {
+      "scenario": "Тест close_modal",
+      "action": "close_modal",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:27.479009",
+      "status": "success",
+      "error": null,
+      "duration_ms": 518
+    },
+    {
+      "scenario": "Тест wait_for_modal",
+      "action": "wait_for_modal",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:29.000019",
+      "status": "unknown",
+      "error": "Неожиданный статус ответа",
+      "duration_ms": 20013
+    },
+    {
+      "scenario": "Тест get_modal_text",
+      "action": "get_modal_text",
+      "params": {},
+      "timestamp": "2026-01-15T20:29:50.014128",
+      "status": "failed",
+      "error": "Модальное окно не найдено или пустое",
+      "duration_ms": 513,
+      "error_type": null
+    }
+  ]
+}

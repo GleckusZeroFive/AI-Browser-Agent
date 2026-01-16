@@ -1,0 +1,34 @@
+{
+  "bug_id": "3db53aa80bb6",
+  "status": "detected",
+  "first_seen": "2026-01-16T11:29:34.738813",
+  "last_seen": "2026-01-16T11:29:34.738815",
+  "occurrences": 1,
+  "error_type": null,
+  "error_message": "Не удалось найти поле поиска. Попробовано 0 селекторов.",
+  "action": "search_and_type",
+  "sessions": [
+    {
+      "session_id": "20260116_112833",
+      "timestamp": "2026-01-16T11:29:34.738816",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T11:29:34.738648",
+    "action": "search_and_type",
+    "params": {
+      "text": "пицца"
+    },
+    "reasoning": "Ищу пиццу на Delivery Club",
+    "error_type": null,
+    "error_message": "Не удалось найти поле поиска. Попробовано 0 селекторов.",
+    "suggestion": null
+  },
+  "history": []
+}

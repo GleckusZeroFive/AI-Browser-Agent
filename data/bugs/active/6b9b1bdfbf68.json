@@ -1,0 +1,42 @@
+{
+  "bug_id": "6b9b1bdfbf68",
+  "status": "detected",
+  "first_seen": "2026-01-16T11:30:22.320730",
+  "last_seen": "2026-01-16T21:58:03.245778",
+  "occurrences": 3,
+  "error_type": null,
+  "error_message": "Модальное окно не найдено или пустое",
+  "action": "get_modal_text",
+  "sessions": [
+    {
+      "session_id": "20260116_112833",
+      "timestamp": "2026-01-16T11:30:22.320733",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_122039",
+      "timestamp": "2026-01-16T12:22:25.194882",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_215631",
+      "timestamp": "2026-01-16T21:58:03.245780",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T21:58:03.245592",
+    "action": "get_modal_text",
+    "params": {},
+    "reasoning": "Показ меню пиццы",
+    "error_type": null,
+    "error_message": "Модальное окно не найдено или пустое",
+    "suggestion": null
+  },
+  "history": []
+}

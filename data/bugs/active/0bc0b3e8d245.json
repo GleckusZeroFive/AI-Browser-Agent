@@ -1,0 +1,37 @@
+{
+  "bug_id": "0bc0b3e8d245",
+  "status": "detected",
+  "first_seen": "2026-01-16T11:49:39.306066",
+  "last_seen": "2026-01-16T11:55:54.266354",
+  "occurrences": 2,
+  "error_type": null,
+  "error_message": "Неизвестное действие: wait_for_results",
+  "action": "wait_for_results",
+  "sessions": [
+    {
+      "session_id": "20260116_114837",
+      "timestamp": "2026-01-16T11:49:39.306069",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_115438",
+      "timestamp": "2026-01-16T11:55:54.266356",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T11:55:54.266213",
+    "action": "wait_for_results",
+    "params": {},
+    "reasoning": "Жду результатов поиска",
+    "error_type": null,
+    "error_message": "Неизвестное действие: wait_for_results",
+    "suggestion": null
+  },
+  "history": []
+}

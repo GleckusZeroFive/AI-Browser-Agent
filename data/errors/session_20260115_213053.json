@@ -1,0 +1,22 @@
+{
+  "session_id": "20260115_213053",
+  "timestamp": "2026-01-15T21:35:34.839290",
+  "total_errors": 1,
+  "runtime_errors": 0,
+  "structured_errors": 1,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-15T21:32:31.571904",
+      "action": "type_text",
+      "params": {
+        "selector": "#composition",
+        "text": "Картофель фри"
+      },
+      "reasoning": "Ищу форму для заказа",
+      "error_type": null,
+      "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#composition\")\n",
+      "suggestion": null
+    }
+  ]
+}

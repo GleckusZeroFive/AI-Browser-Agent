@@ -1,0 +1,28 @@
+{
+  "user_info": {
+    "location": "Москва",
+    "dietary_restrictions": [],
+    "budget_preferences": {}
+  },
+  "verified_facts": {
+    "restaurants": {},
+    "services": {},
+    "locations": {}
+  },
+  "interaction_history": {
+    "confirmed_facts": [],
+    "rejected_suggestions": []
+  },
+  "metadata": {
+    "created_at": "2026-01-15T18:18:48.037249",
+    "last_updated": "2026-01-16T22:08:05.788327",
+    "version": "1.0"
+  },
+  "working_memory": {
+    "current_task": null,
+    "current_page": "переход на yandex.ru",
+    "shown_options": [],
+    "last_action": "переход на новую страницу",
+    "context": {}
+  }
+}

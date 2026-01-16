@@ -1,0 +1,21 @@
+{
+  "session_id": "20260115_212041",
+  "timestamp": "2026-01-15T21:22:04.365463",
+  "total_errors": 1,
+  "runtime_errors": 0,
+  "structured_errors": 1,
+  "errors": [
+    {
+      "type": "structured",
+      "timestamp": "2026-01-15T21:21:44.255086",
+      "action": "click_by_text",
+      "params": {
+        "text": "Luna Coffee Shop"
+      },
+      "reasoning": "Открываю страницу кофейни Luna Coffee Shop на Tripadvisor",
+      "error_type": null,
+      "error_message": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Luna Coffee Shop\").first\n",
+      "suggestion": null
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "bug_id": "53de14f77ee4",
+  "status": "detected",
+  "first_seen": "2026-01-15T21:21:44.257391",
+  "last_seen": "2026-01-16T12:06:20.273876",
+  "occurrences": 5,
+  "error_type": null,
+  "error_message": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Luna Coffee Shop\").first\n",
+  "action": "click_by_text",
+  "sessions": [
+    {
+      "session_id": "20260115_212041",
+      "timestamp": "2026-01-15T21:21:44.257403",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_111257",
+      "timestamp": "2026-01-16T11:15:15.283950",
+      "source": "sandbox"
+    },
+    {
+      "session_id": "20260116_111257",
+      "timestamp": "2026-01-16T11:15:31.799701",
+      "source": "sandbox"
+    },
+    {
+      "session_id": "20260116_120429",
+      "timestamp": "2026-01-16T12:06:03.077860",
+      "source": "production"
+    },
+    {
+      "session_id": "20260116_120429",
+      "timestamp": "2026-01-16T12:06:20.273878",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-16T12:06:20.273723",
+    "action": "click_by_text",
+    "params": {
+      "text": "Пепперони от ПИРОГИ & ПИЦЦА"
+    },
+    "reasoning": "Кликаю на пепперони от ПИРОГИ & ПИЦЦА",
+    "error_type": null,
+    "error_message": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Пепперони от ПИРОГИ & ПИЦЦА\").first\n",
+    "suggestion": null
+  },
+  "history": []
+}

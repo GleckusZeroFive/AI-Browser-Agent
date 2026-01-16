@@ -1,0 +1,35 @@
+{
+  "bug_id": "de25759f90b6",
+  "status": "detected",
+  "first_seen": "2026-01-15T21:32:31.572143",
+  "last_seen": "2026-01-15T21:32:31.572145",
+  "occurrences": 1,
+  "error_type": null,
+  "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#composition\")\n",
+  "action": "type_text",
+  "sessions": [
+    {
+      "session_id": "20260115_213053",
+      "timestamp": "2026-01-15T21:32:31.572146",
+      "source": "production"
+    }
+  ],
+  "analysis": null,
+  "fix_commit": null,
+  "verification_date": null,
+  "closed_date": null,
+  "latest_error_data": {
+    "type": "structured",
+    "timestamp": "2026-01-15T21:32:31.571904",
+    "action": "type_text",
+    "params": {
+      "selector": "#composition",
+      "text": "Картофель фри"
+    },
+    "reasoning": "Ищу форму для заказа",
+    "error_type": null,
+    "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"#composition\")\n",
+    "suggestion": null
+  },
+  "history": []
+}

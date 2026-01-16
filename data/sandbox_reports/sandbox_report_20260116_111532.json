@@ -1,0 +1,195 @@
+{
+  "timestamp": "2026-01-16T11:15:32.802693",
+  "mode": "smart_sandbox",
+  "based_on_errors": [
+    "production_20260115_210301.jsonl",
+    "production_20260115_214141.jsonl",
+    "production_20260115_213053.jsonl",
+    "production_20260115_212041.jsonl",
+    "production_20260116_105937.jsonl",
+    "session_20260116_105937.json",
+    "session_20260115_214141.json",
+    "session_20260115_212041.json",
+    "session_20260115_210301.json",
+    "session_20260115_213053.json"
+  ],
+  "summary": {
+    "total_tests": 6,
+    "reproduction_tests": 3,
+    "alternative_tests": 2
+  },
+  "findings": {
+    "total_production_errors": 16,
+    "errors_reproduced": 2,
+    "errors_possibly_fixed": 1,
+    "working_alternatives_found": 0,
+    "reproduction_rate": 66.67
+  },
+  "recommendations": [
+    "🎉 1 ошибок больше не воспроизводятся! Возможно были исправлены."
+  ],
+  "detailed_results": [
+    {
+      "scenario": "Воспроизвести: navigate с теми же параметрами",
+      "type": "reproduction",
+      "action": "navigate",
+      "params": {
+        "url": "https://delivery-club.ru/krasnoyarsk"
+      },
+      "timestamp": "2026-01-16T11:12:57.430235",
+      "status": "unexpected_success",
+      "error": null,
+      "duration_ms": 54416,
+      "original_error": {
+        "type": "structured",
+        "timestamp": "2026-01-16T11:07:15.534660",
+        "action": "navigate",
+        "params": {
+          "url": "https://delivery-club.ru/krasnoyarsk"
+        },
+        "reasoning": "Переход на Delivery Club в Красноярске",
+        "error_type": null,
+        "error_message": "Капча не решена на https://delivery-club.ru/krasnoyarsk. Таймаут ожидания (300с). Капча не решена.",
+        "suggestion": null
+      },
+      "note": "Ошибка НЕ воспроизведена (возможно исправлена?)"
+    },
+    {
+      "scenario": "Проверка: navigate на другом сайте",
+      "type": "cross_site",
+      "action": "navigate",
+      "params": {
+        "url": "https://delivery-club.ru/krasnoyarsk"
+      },
+      "timestamp": "2026-01-16T11:13:52.849908",
+      "status": "success",
+      "error": null,
+      "duration_ms": 3895,
+      "original_error": {
+        "type": "structured",
+        "timestamp": "2026-01-16T11:07:15.534660",
+        "action": "navigate",
+        "params": {
+          "url": "https://delivery-club.ru/krasnoyarsk"
+        },
+        "reasoning": "Переход на Delivery Club в Красноярске",
+        "error_type": null,
+        "error_message": "Капча не решена на https://delivery-club.ru/krasnoyarsk. Таймаут ожидания (300с). Капча не решена.",
+        "suggestion": null
+      }
+    },
+    {
+      "scenario": "Воспроизвести: type_text с теми же параметрами",
+      "type": "reproduction",
+      "action": "type_text",
+      "params": {
+        "selector": "input[type='search']",
+        "text": "пицца 549 рублей"
+      },
+      "timestamp": "2026-01-16T11:13:57.746561",
+      "status": "expected_fail",
+      "error": null,
+      "duration_ms": 30004,
+      "original_error": {
+        "type": "structured",
+        "timestamp": "2026-01-16T11:11:21.608045",
+        "action": "type_text",
+        "params": {
+          "selector": "input[type='search']",
+          "text": "пицца 549 рублей"
+        },
+        "reasoning": "Ввод текста в поисковое поле",
+        "error_type": null,
+        "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+        "suggestion": null
+      },
+      "note": "Ошибка воспроизведена как ожидалось"
+    },
+    {
+      "scenario": "Альтернатива: type_text с другими параметрами",
+      "type": "alternative",
+      "action": "type_text",
+      "params": {
+        "selector": "input[type='search']",
+        "text": "пицца 549 рублей"
+      },
+      "timestamp": "2026-01-16T11:14:28.754550",
+      "status": "failed",
+      "error": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+      "duration_ms": 30008,
+      "original_error": {
+        "type": "structured",
+        "timestamp": "2026-01-16T11:11:21.608045",
+        "action": "type_text",
+        "params": {
+          "selector": "input[type='search']",
+          "text": "пицца 549 рублей"
+        },
+        "reasoning": "Ввод текста в поисковое поле",
+        "error_type": null,
+        "error_message": "Ошибка ввода текста: Page.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type='search']\")\n",
+        "suggestion": null
+      },
+      "note": "Альтернатива не сработала"
+    },
+    {
+      "scenario": "Воспроизвести: click_by_text с теми же параметрами",
+      "type": "reproduction",
+      "action": "click_by_text",
+      "params": {
+        "text": "Luna Coffee Shop"
+      },
+      "timestamp": "2026-01-16T11:14:59.765772",
+      "status": "expected_fail",
+      "error": null,
+      "duration_ms": 15521,
+      "original_error": {
+        "type": "structured",
+        "timestamp": "2026-01-15T21:21:44.255086",
+        "action": "click_by_text",
+        "params": {
+          "text": "Luna Coffee Shop"
+        },
+        "reasoning": "Открываю страницу кофейни Luna Coffee Shop на Tripadvisor",
+        "error_type": null,
+        "error_message": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Luna Coffee Shop\").first\n",
+        "suggestion": null
+      },
+      "note": "Ошибка воспроизведена как ожидалось"
+    },
+    {
+      "scenario": "Альтернатива: click_by_text с другими параметрами",
+      "type": "alternative",
+      "action": "click_by_text",
+      "params": {
+        "text": "Luna Coffee Shop",
+        "exact": true
+      },
+      "timestamp": "2026-01-16T11:15:16.287948",
+      "status": "failed",
+      "error": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Luna Coffee Shop\", exact=True)\n",
+      "duration_ms": 15512,
+      "original_error": {
+        "type": "structured",
+        "timestamp": "2026-01-15T21:21:44.255086",
+        "action": "click_by_text",
+        "params": {
+          "text": "Luna Coffee Shop"
+        },
+        "reasoning": "Открываю страницу кофейни Luna Coffee Shop на Tripadvisor",
+        "error_type": null,
+        "error_message": "Ошибка клика по тексту: Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"Luna Coffee Shop\").first\n",
+        "suggestion": null
+      },
+      "note": "Альтернатива не сработала"
+    }
+  ],
+  "supervisor_stats": {
+    "mode": "sandbox",
+    "session_id": "20260116_111257",
+    "total_errors": 4,
+    "runtime_errors": 0,
+    "structured_errors": 4,
+    "ai_agent_initialized": false
+  }
+}
