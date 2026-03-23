@@ -138,6 +138,3 @@ python main.py
 
 2026-01-16
 
-## Автор
-
-Claude Sonnet 4.5 (AI-ассистент)

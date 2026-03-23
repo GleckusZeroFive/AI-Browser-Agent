@@ -396,7 +396,7 @@ class AIAgent:
 ## 🔍 Тестирование
 
 ### Тестовый скрипт
-Создан скрипт для тестирования: `/tmp/claude/.../scratchpad/test_prompts_simple.py`
+Создан скрипт для тестирования: `tests/test_prompts_simple.py`
 
 **Результаты:**
 ```
@@ -444,7 +444,6 @@ feat: Add multi-level prompt system for specialized agents
 
 Тестирование: Все критерии успеха выполнены ✅
 
-Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 ```
 
 ---

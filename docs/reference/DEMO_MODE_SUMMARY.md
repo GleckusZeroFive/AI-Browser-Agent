@@ -423,5 +423,5 @@ async def search_and_click(page, text):
 
 ---
 
-**Автор:** Claude Code
+
 **Дата создания:** 2024-01-15

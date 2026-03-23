@@ -203,6 +203,6 @@ pytest tests/ -k "optimization or savings" -v
 
 ---
 
-**Составлено:** Claude Sonnet 4.5
+
 **Сессия:** 5 (Testing)
 **Проект:** ai-browser-agent
